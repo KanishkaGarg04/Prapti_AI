@@ -52,21 +52,90 @@ async def calculate_risk(data: LoanRequest):
 
 @app.post("/api/optimize-loan")
 async def optimize_loan(data: LoanRequest):
+    tenure_options = [5, 10, 15, 20, 25, 30]
+
+    valid_options = []
+    all_options = []
+
+    for t in tenure_options:
+        emi = calculate_emi(data.loan_amount, data.interest_rate, t)
+        total_payment = emi * 12 * t
+        interest = total_payment - data.loan_amount
+
+        option = {
+            "tenure_years": t,
+            "emi": round(emi, 2),
+            "total_interest": round(interest, 2)
+        }
+
+        all_options.append(option)
+
+        # affordability check (EMI ≤ 40% of income)
+        if emi <= data.monthly_income * 0.4:
+            valid_options.append(option)
+
+    # If no valid option
+    if not valid_options:
+        return {
+            "error": "Loan is not affordable based on your current income."
+        }
+
+    #  Choose best option (lowest interest)
+    best_option = min(valid_options, key=lambda x: x["total_interest"])
+
+    #  Calculate interest saved vs worst case
+    worst_option = max(valid_options, key=lambda x: x["total_interest"])
+    interest_saved = worst_option["total_interest"] - best_option["total_interest"]
+
+    #  explanation
+    if best_option["tenure_years"] <= 10:
+        explanation = "You can afford higher EMI, so a shorter tenure minimizes interest."
+    elif best_option["tenure_years"] <= 20:
+        explanation = "Balanced option between EMI affordability and interest savings."
+    else:
+        explanation = "Longer tenure keeps EMI manageable but increases total interest."
+
     return {
-        "recommended_tenure_years": 15,
-        "recommended_emi": 48750,
-        "interest_saved": 1240000,
-        "explanation": "AI recommends 15 years tenure. You will save ₹12,40,000 in interest.",
-        "all_options": []
+        "recommended_tenure_years": best_option["tenure_years"],
+        "recommended_emi": best_option["emi"],
+        "total_interest": best_option["total_interest"],
+        "interest_saved": round(interest_saved, 2),
+        "affordability_ratio": round(best_option["emi"] / data.monthly_income, 2),
+        "explanation": explanation,
+        "all_options": all_options
     }
 
 @app.post("/api/opportunity-cost")
 async def opportunity_cost(data: LoanRequest):
     emi = calculate_emi(data.loan_amount, data.interest_rate, data.tenure_years)
-    chart_data = [{"year": y, "cumulative_emi_paid": emi*y*12, "mutual_fund_growth": round(emi*y*12*1.8, 2)} for y in range(1, data.tenure_years+1)]
+
+    monthly_rate = 0.12 / 12  # 12% annual return
+    months = data.tenure_years * 12
+
+    investment_value = 0
+    chart_data = []
+
+    for m in range(1, months + 1):
+        # SIP investment logic
+        investment_value = (investment_value + emi) * (1 + monthly_rate)
+
+        year = m // 12
+
+        if m % 12 == 0:
+            chart_data.append({
+                "year": year,
+                "cumulative_emi_paid": round(emi * m, 2),
+                "investment_value": round(investment_value, 2)
+            })
+
+    total_invested = emi * months
+
     return {
+        "total_emi_paid": round(total_invested, 2),
+        "investment_value": round(investment_value, 2),
+        "difference": round(investment_value - total_invested, 2),
         "chart_data": chart_data,
-        "explanation": f"Investing EMI in mutual funds @12% would grow to ₹{round(emi*data.tenure_years*12*2.2):,} in {data.tenure_years} years!"
+        "explanation": f"If you invested your EMI at 12% return, it could grow significantly over time."
     }
 
 @app.post("/api/debt-vs-rent")
@@ -81,6 +150,57 @@ async def debt_vs_rent(data: LoanRequest):
         rent *= 1.05
         data_list.append({"year": year, "debt_cumulative": round(cum_debt, 2), "rent_cumulative": round(cum_rent, 2)})
     return {"debt_vs_rent_data": data_list, "20_year_debt_total": round(cum_debt, 2), "20_year_rent_total": round(cum_rent, 2)}
+
+@app.post("/api/simulate-shocks")
+async def simulate_shocks(data: LoanRequest):
+    emi = calculate_emi(data.loan_amount, data.interest_rate, data.tenure_years)
+
+    scenarios = []
+
+    #  Income Drop (20%)
+    new_income = data.monthly_income * 0.8
+    ratio = (emi + data.existing_emis) / new_income
+
+    scenarios.append({
+        "type": "Income Drop (20%)",
+        "new_income": round(new_income, 2),
+        "emi": round(emi, 2),
+        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
+        "safe": ratio < 0.5,
+        "message": "Your EMI becomes too high compared to reduced income." if ratio >= 0.5 else "Still manageable."
+    })
+
+    # Interest Rate Increase (+2%)
+    new_rate = data.interest_rate + 2
+    new_emi = calculate_emi(data.loan_amount, new_rate, data.tenure_years)
+    ratio = (new_emi + data.existing_emis) / data.monthly_income
+
+    scenarios.append({
+        "type": "Interest Rate Increase (+2%)",
+        "new_rate": new_rate,
+        "new_emi": round(new_emi, 2),
+        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
+        "safe": ratio < 0.5,
+        "message": "Higher interest increases EMI burden." if ratio >= 0.5 else "Still manageable."
+    })
+
+    # Expense Spike (₹10k increase)
+    new_expenses = data.existing_emis + 10000
+    ratio = (emi + new_expenses) / data.monthly_income
+
+    scenarios.append({
+        "type": "Expense Spike (+₹10k)",
+        "new_expenses": new_expenses,
+        "emi": round(emi, 2),
+        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
+        "safe": ratio < 0.5,
+        "message": "Unexpected expenses increase financial stress." if ratio >= 0.5 else "Still manageable."
+    })
+
+    return {
+        "base_emi": round(emi, 2),
+        "scenarios": scenarios
+    }
 
 @app.get("/")
 async def root():
