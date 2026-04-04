@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional, Any
 import math
 
 app = FastAPI(title="Prapti AI - Backend")
@@ -13,6 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- MODELS ---
+
 class LoanRequest(BaseModel):
     loan_amount: float
     interest_rate: float
@@ -23,10 +26,18 @@ class LoanRequest(BaseModel):
     current_age: int = 30
     monthly_rent: float = 25000
 
+class ChatRequest(BaseModel):
+    message: str
+    context: Optional[Any] = None
+
+# --- UTILS ---
+
 def calculate_emi(p, r, n):
     if r == 0: return round(p / (n*12), 2)
     rm = r / (12 * 100)
     return round(p * rm * (1+rm)**(n*12) / ((1+rm)**(n*12)-1), 2)
+
+# --- EXISTING CALCULATION ROUTES ---
 
 @app.post("/api/calculate-risk")
 async def calculate_risk(data: LoanRequest):
@@ -53,7 +64,6 @@ async def calculate_risk(data: LoanRequest):
 @app.post("/api/optimize-loan")
 async def optimize_loan(data: LoanRequest):
     tenure_options = [5, 10, 15, 20, 25, 30]
-
     valid_options = []
     all_options = []
 
@@ -61,81 +71,48 @@ async def optimize_loan(data: LoanRequest):
         emi = calculate_emi(data.loan_amount, data.interest_rate, t)
         total_payment = emi * 12 * t
         interest = total_payment - data.loan_amount
-
-        option = {
-            "tenure_years": t,
-            "emi": round(emi, 2),
-            "total_interest": round(interest, 2)
-        }
-
+        option = {"tenure_years": t, "emi": round(emi, 2), "total_interest": round(interest, 2)}
         all_options.append(option)
-
-        # affordability check (EMI ≤ 40% of income)
         if emi <= data.monthly_income * 0.4:
             valid_options.append(option)
 
-    # If no valid option
     if not valid_options:
-        return {
-            "error": "Loan is not affordable based on your current income."
-        }
+        return {"error": "Loan is not affordable based on your current income."}
 
-    #  Choose best option (lowest interest)
     best_option = min(valid_options, key=lambda x: x["total_interest"])
-
-    #  Calculate interest saved vs worst case
-    worst_option = max(valid_options, key=lambda x: x["total_interest"])
+    worst_option = max(all_options, key=lambda x: x["total_interest"])
     interest_saved = worst_option["total_interest"] - best_option["total_interest"]
-
-    #  explanation
-    if best_option["tenure_years"] <= 10:
-        explanation = "You can afford higher EMI, so a shorter tenure minimizes interest."
-    elif best_option["tenure_years"] <= 20:
-        explanation = "Balanced option between EMI affordability and interest savings."
-    else:
-        explanation = "Longer tenure keeps EMI manageable but increases total interest."
 
     return {
         "recommended_tenure_years": best_option["tenure_years"],
         "recommended_emi": best_option["emi"],
         "total_interest": best_option["total_interest"],
         "interest_saved": round(interest_saved, 2),
-        "affordability_ratio": round(best_option["emi"] / data.monthly_income, 2),
-        "explanation": explanation,
+        "explanation": "Optimized for lowest total interest while keeping EMI under 40% of income.",
         "all_options": all_options
     }
 
 @app.post("/api/opportunity-cost")
 async def opportunity_cost(data: LoanRequest):
     emi = calculate_emi(data.loan_amount, data.interest_rate, data.tenure_years)
-
-    monthly_rate = 0.12 / 12  # 12% annual return
+    monthly_rate = 0.12 / 12
     months = data.tenure_years * 12
-
     investment_value = 0
     chart_data = []
 
     for m in range(1, months + 1):
-        # SIP investment logic
         investment_value = (investment_value + emi) * (1 + monthly_rate)
-
-        year = m // 12
-
         if m % 12 == 0:
             chart_data.append({
-                "year": year,
+                "year": m // 12,
                 "cumulative_emi_paid": round(emi * m, 2),
                 "investment_value": round(investment_value, 2)
             })
 
-    total_invested = emi * months
-
     return {
-        "total_emi_paid": round(total_invested, 2),
+        "total_emi_paid": round(emi * months, 2),
         "investment_value": round(investment_value, 2),
-        "difference": round(investment_value - total_invested, 2),
-        "chart_data": chart_data,
-        "explanation": f"If you invested your EMI at 12% return, it could grow significantly over time."
+        "chart_data": chart_data
     }
 
 @app.post("/api/debt-vs-rent")
@@ -149,62 +126,58 @@ async def debt_vs_rent(data: LoanRequest):
         cum_rent += rent * 12
         rent *= 1.05
         data_list.append({"year": year, "debt_cumulative": round(cum_debt, 2), "rent_cumulative": round(cum_rent, 2)})
-    return {"debt_vs_rent_data": data_list, "20_year_debt_total": round(cum_debt, 2), "20_year_rent_total": round(cum_rent, 2)}
+    return {"debt_vs_rent_data": data_list}
 
-@app.post("/api/simulate-shocks")
-async def simulate_shocks(data: LoanRequest):
-    emi = calculate_emi(data.loan_amount, data.interest_rate, data.tenure_years)
+# --- NEW CHATBOT ROUTE ---
 
-    scenarios = []
+@app.post("/api/chat")
+async def chat_with_ai(request: ChatRequest):
+    query = request.message.lower()
+    res = request.context
+    
+    # 1. Handle cases where no analysis has been run yet
+    if not res or not res.get('risk'):
+        return {"reply": "Please run the financial assessment first so I can analyze your specific numbers!"}
 
-    #  Income Drop (20%)
-    new_income = data.monthly_income * 0.8
-    ratio = (emi + data.existing_emis) / new_income
+    # 2. Contextual Logic
+    risk_data = res.get('risk', {})
+    opt_data = res.get('optimize', {})
+    
+    # Risk-based answers
+    if "risk" in query or "safe" in query or "score" in query:
+        score = risk_data['risk']['risk_score']
+        cat = risk_data['risk']['category']
+        reply = f"Your Risk Score is {score}. You are currently in the {cat} zone. "
+        if score > 60:
+            reply += "This is high because your EMIs take up a large portion of your income. I suggest increasing tenure or reducing the loan amount."
+        else:
+            reply += "Your debt-to-income ratio looks healthy!"
+            
+    # Optimization-based answers
+    elif "save" in query or "interest" in query or "better" in query:
+        if opt_data:
+            saved = opt_data.get('interest_saved', 0)
+            years = opt_data.get('recommended_tenure_years', 0)
+            reply = f"Based on my optimization logic, you could save ₹{saved:,} in total interest by switching to a {years}-year tenure. This keeps your EMI affordable while minimizing bank profit."
+        else:
+            reply = "I recommend clicking 'Optimize Loan' to see how much interest we can save you!"
 
-    scenarios.append({
-        "type": "Income Drop (20%)",
-        "new_income": round(new_income, 2),
-        "emi": round(emi, 2),
-        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
-        "safe": ratio < 0.5,
-        "message": "Your EMI becomes too high compared to reduced income." if ratio >= 0.5 else "Still manageable."
-    })
+    # Opportunity cost answers
+    elif "invest" in query or "mutual fund" in query or "sip" in query:
+        opp = res.get('opportunity', {})
+        if opp:
+            val = opp.get('investment_value', 0)
+            reply = f"If you invested your EMI in an SIP @ 12% instead of paying a loan, you'd have ₹{val:,.0f} at the end of the term. That's the 'Opportunity Cost' of debt."
+        else:
+            reply = "Investing your EMI in a 12% SIP would likely yield much higher returns than the value of the house over time. Run the 'Opportunity Cost' check to see the chart!"
 
-    # Interest Rate Increase (+2%)
-    new_rate = data.interest_rate + 2
-    new_emi = calculate_emi(data.loan_amount, new_rate, data.tenure_years)
-    ratio = (new_emi + data.existing_emis) / data.monthly_income
+    # Default fallback
+    else:
+        reply = "I'm your Prapti AI assistant. I can explain your Risk Score, help you optimize your EMI, or calculate if Renting is cheaper for you. What's on your mind?"
 
-    scenarios.append({
-        "type": "Interest Rate Increase (+2%)",
-        "new_rate": new_rate,
-        "new_emi": round(new_emi, 2),
-        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
-        "safe": ratio < 0.5,
-        "message": "Higher interest increases EMI burden." if ratio >= 0.5 else "Still manageable."
-    })
+    return {"reply": reply}
 
-    # Expense Spike (₹10k increase)
-    new_expenses = data.existing_emis + 10000
-    ratio = (emi + new_expenses) / data.monthly_income
-
-    scenarios.append({
-        "type": "Expense Spike (+₹10k)",
-        "new_expenses": new_expenses,
-        "emi": round(emi, 2),
-        "risk_level": "Safe" if ratio < 0.4 else "Risky" if ratio < 0.6 else "Danger",
-        "safe": ratio < 0.5,
-        "message": "Unexpected expenses increase financial stress." if ratio >= 0.5 else "Still manageable."
-    })
-
-    return {
-        "base_emi": round(emi, 2),
-        "scenarios": scenarios
-    }
-
-@app.get("/")
-async def root():
-    return {"message": "🚀 Prapti AI Backend is running!"}
+# --- SERVER START ---
 
 if __name__ == "__main__":
     import uvicorn
