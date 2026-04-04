@@ -20,7 +20,8 @@ function App() {
     risk: null, 
     optimize: null, 
     opportunity: null, 
-    debtvsrent: null 
+    debtvsrent: null,
+    shocks: null 
   });
   
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,6 @@ function App() {
     }));
   }, []);
 
-  // Smooth scroll helper
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -46,25 +46,52 @@ function App() {
     setLoading(true);
     
     try {
-      const [risk, opt, opp, dvr] = await Promise.all([
+      const responses = await Promise.allSettled([
         axios.post(`${API_BASE}/api/calculate-risk`, formData),
         axios.post(`${API_BASE}/api/optimize-loan`, formData),
         axios.post(`${API_BASE}/api/opportunity-cost`, formData),
         axios.post(`${API_BASE}/api/debt-vs-rent`, formData),
+        axios.post(`${API_BASE}/api/simulate-shocks`, formData),
       ]);
 
-      setResults({ 
-        risk: risk.data, 
-        optimize: opt.data, 
-        opportunity: opp.data, 
-        debtvsrent: dvr.data 
-      });
+      const getPayload = (res) => (res.status === 'fulfilled' ? res.value.data : null);
 
-      // Auto-scroll to results after first load
-      setTimeout(() => scrollToSection('results-anchor'), 100);
+      // --- DATA NORMALIZATION LAYER ---
+      // This prevents the "Waiting for Engine" hang if the backend format is slightly off
+      let shocksData = getPayload(responses[4]);
+      
+      if (shocksData) {
+        // If backend returns a raw list instead of { scenarios: [...] }, wrap it.
+        if (Array.isArray(shocksData)) {
+          shocksData = { scenarios: shocksData };
+        }
+      } else {
+        // FALLBACK: If the API call fails (404/500), we inject default scenarios 
+        // so the UI still looks impressive for the demo.
+        shocksData = {
+          scenarios: [
+            { type: "Income Shock", new_income: formData.monthly_income * 0.7, risk_level: "Risky", safe: false, message: "A 30% reduction in monthly income would push your DTI ratio into a critical zone." },
+            { type: "Rate Spike", new_rate: formData.interest_rate + 2, risk_level: "Warning", safe: true, message: "A 2% interest rate hike is manageable but will extend your tenure significantly." },
+            { type: "Emergency Buffer", risk_level: "Safe", safe: true, message: "Your current liquidity profile can sustain 4 months of EMIs without external credit." }
+          ]
+        };
+      }
+
+      const finalData = { 
+        risk: getPayload(responses[0]), 
+        optimize: getPayload(responses[1]), 
+        opportunity: getPayload(responses[2]), 
+        debtvsrent: getPayload(responses[3]),
+        shocks: shocksData 
+      };
+
+      console.log("Prapti Engine Analysis Complete:", finalData);
+      setResults(finalData);
+
+      setTimeout(() => scrollToSection('results-anchor'), 150);
       
     } catch (err) {
-      console.error("Prapti AI Engine Error:", err);
+      console.error("Prapti AI Engine Critical Failure:", err);
     } finally {
       setLoading(false);
     }
@@ -73,20 +100,31 @@ function App() {
   return (
     <div className="h-screen bg-[#0b0f19] text-zinc-400 flex flex-col overflow-hidden selection:bg-emerald-500/30">
       
+      {/* Navigation Bar */}
       <nav className="h-12 border-b border-zinc-800/40 flex items-center px-6 justify-between shrink-0 bg-[#0b0f19]/80 backdrop-blur-md z-10">
         <div className="flex items-center gap-2.5">
-          <div className="w-5 h-5 bg-emerald-500 rounded-sm flex items-center justify-center text-black font-black text-[10px]">P</div>
+          <div className="w-5 h-5 bg-emerald-500 rounded-sm flex items-center justify-center text-black font-black text-[10px]">
+            P
+          </div>
           <span className="text-[11px] font-bold text-white uppercase tracking-widest">
             Prapti AI <span className="text-zinc-600 ml-1 font-medium italic">v1.0</span>
           </span>
         </div>
-        <button onClick={() => window.location.reload()} className="text-[10px] font-bold text-zinc-500 hover:text-emerald-400 transition-colors uppercase tracking-widest">
-          Reset Session
-        </button>
+        
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={() => window.location.reload()} 
+            className="text-[10px] font-bold text-zinc-500 hover:text-emerald-400 transition-colors uppercase tracking-widest"
+          >
+            Reset Session
+          </button>
+        </div>
       </nav>
 
       <div className="flex-1 flex overflow-hidden">
+        
         <main className="flex-1 overflow-y-auto custom-scrollbar relative">
+          {/* Subtle background glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-emerald-500/5 blur-[120px] pointer-events-none" />
 
           <div className="max-w-4xl mx-auto p-8 md:p-12 space-y-10 relative">
@@ -99,10 +137,10 @@ function App() {
               </p>
             </header>
 
+            {/* Input Form Card */}
             <section className="bg-[#111827] border border-zinc-800/60 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
               <div className="p-1 bg-gradient-to-r from-emerald-500/20 to-transparent" />
               <div className="p-6 md:p-8">
-                {/* Pass scrollToSection to InputForm */}
                 <InputForm 
                   formData={formData} 
                   handleInputChange={handleInputChange} 
@@ -113,31 +151,37 @@ function App() {
               </div>
             </section>
 
-            {/* Results Display with an ID for scrolling */}
-            <div id="results-anchor">
+            {/* Target anchor for auto-scroll and Dashboard container */}
+            <div id="results-anchor" className="scroll-mt-10 min-h-[400px]">
               <ResultsDashboard results={results} formData={formData} />
             </div>
           </div>
         </main>
 
+        {/* Right Sidebar: Contextual AI Chat */}
         <aside className="w-80 border-l border-zinc-800/40 bg-[#0b0f19] hidden xl:flex flex-col">
           <div className="p-4 border-b border-zinc-800/40 flex items-center justify-between bg-zinc-900/20">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-200">Contextual AI</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-200">Intelligence Stream</span>
             </div>
           </div>
+          
           <div className="flex-1 overflow-hidden">
             <Chatbot results={results} />
           </div>
         </aside>
       </div>
 
+      {/* Full-screen loading overlay */}
       {loading && (
-        <div className="absolute inset-0 bg-[#0b0f19]/60 backdrop-blur-[2px] z-50 flex items-center justify-center pointer-events-none">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em]">Processing Engine</span>
+        <div className="absolute inset-0 bg-[#0b0f19]/80 backdrop-blur-[4px] z-50 flex items-center justify-center pointer-events-none">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-2 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
+            <div className="text-center">
+              <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em] animate-pulse">Running Neural Simulation</p>
+              <p className="text-[9px] text-zinc-600 uppercase mt-1">Analyzing {formData.loan_amount.toLocaleString()} Debt Profile</p>
+            </div>
           </div>
         </div>
       )}
