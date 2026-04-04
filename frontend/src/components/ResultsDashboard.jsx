@@ -5,18 +5,19 @@ import {
   BarChart, Bar, Legend, Area, AreaChart 
 } from 'recharts';
 
+// Compact Tooltip for high-density UI
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-zinc-900 border border-emerald-500/40 rounded-3xl p-6 shadow-2xl backdrop-blur-xl">
-        <p className="text-emerald-400 font-medium mb-4">Year {label}</p>
+      <div className="bg-[#0b0f19] border border-zinc-800 rounded-lg p-3 shadow-2xl backdrop-blur-md">
+        <p className="text-[10px] text-zinc-500 uppercase font-bold mb-2">Year {label}</p>
         {payload.map((entry, i) => (
-          <div key={i} className="flex justify-between items-center gap-8 py-2 border-b border-zinc-700 last:border-none">
-            <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: entry.color }}></div>
-              <span className="text-zinc-300 font-medium">{entry.name}</span>
+          <div key={i} className="flex justify-between items-center gap-6 py-1">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: entry.color }}></div>
+              <span className="text-[11px] text-zinc-300">{entry.name}</span>
             </div>
-            <span className="font-semibold text-white text-lg">₹{entry.value.toLocaleString('en-IN')}</span>
+            <span className="text-[11px] font-bold text-white">₹{entry.value.toLocaleString('en-IN')}</span>
           </div>
         ))}
       </div>
@@ -25,200 +26,178 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const rupeeFormatter = (value) => `₹${value.toLocaleString('en-IN')}`;
+const rupeeFormatter = (value) => `₹${(value / 100000).toFixed(1)}L`;
 
 export default function ResultsDashboard({ results }) {
-  const [oppView, setOppView] = useState('line');        // 'line' or 'area'
-  const [debtViewMode, setDebtViewMode] = useState('bar'); // 'bar' or 'mixed'
-  const [showYears, setShowYears] = useState(20);        // 10 or 20 years for debt vs rent
+  const [oppView, setOppView] = useState('line');
+  const [showYears, setShowYears] = useState(20);
 
-  const hasAnyResult = results.risk || results.optimize || results.opportunity || results.debtvsrent;
+  if (!results.risk) return null;
 
-  if (!hasAnyResult) {
-    return (
-      <div className="bg-zinc-900/70 border border-zinc-700 rounded-3xl p-20 text-center">
-        <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-7xl mb-6">📈</motion.div>
-        <h3 className="text-2xl font-semibold text-zinc-300">Your Analysis Results</h3>
-        <p className="text-zinc-400 mt-3">Click buttons on the left to generate insights</p>
-      </div>
-    );
-  }
-
-  // Filter debt data based on selected years
-  const filteredDebtData = results.debtvsrent?.debt_vs_rent_data 
-    ? results.debtvsrent.debt_vs_rent_data.slice(0, showYears) 
-    : [];
+  const filteredDebtData = results.debtvsrent?.debt_vs_rent_data?.slice(0, showYears) || [];
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-14 pb-24">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      className="space-y-12 pb-20"
+    >
+      
+      {/* 1. Strategy Cards & Risk Hero (Commonly viewed together) */}
+      <div id="risk-section" className="scroll-mt-24 space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StrategyCard 
+            title="Conservative" 
+            rate="8.5%" 
+            emi={results.risk.emi_monthly * 0.9} 
+            stress="Lowest Risk" 
+            desc="Prioritizes long-term safety."
+          />
+          <StrategyCard 
+            title="Balanced" 
+            rate="9.2%" 
+            emi={results.risk.emi_monthly} 
+            stress="Recommended" 
+            desc="Best interest-to-risk ratio."
+            highlighted 
+          />
+          <StrategyCard 
+            title="Aggressive" 
+            rate="10.5%" 
+            emi={results.risk.emi_monthly * 1.3} 
+            stress="High Savings" 
+            desc="Clears debt 40% faster."
+          />
+        </div>
 
-      {/* Risk Score */}
-      {results.risk && (
-        <motion.div 
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-zinc-900 border border-zinc-700 rounded-3xl p-12"
-        >
-          <h3 className="text-2xl font-semibold mb-8">Debt Trap Risk Score</h3>
-          <div className="flex flex-col md:flex-row gap-12 items-center">
-            <div className="text-center">
-              <div className={`text-9xl font-bold tracking-tighter ${
-                results.risk.risk.color === 'green' ? 'text-emerald-400' : 
-                results.risk.risk.color === 'yellow' ? 'text-amber-400' : 'text-rose-400'
-              }`}>
-                {results.risk.risk.risk_score}
+        {/* Risk Hero */}
+        <div className="bg-[#111827] border border-zinc-800/60 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+          <div className="text-center md:border-r md:border-zinc-800 md:pr-12">
+            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Risk Score</h3>
+            <div className={`text-7xl font-black tracking-tighter ${
+              results.risk.risk.color === 'green' ? 'text-emerald-500' : 
+              results.risk.risk.color === 'yellow' ? 'text-amber-500' : 'text-rose-500'
+            }`}>
+              {results.risk.risk.risk_score}
+            </div>
+            <div className="text-[11px] font-bold uppercase mt-1 tracking-tighter text-zinc-300">{results.risk.risk.category}</div>
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-zinc-400 leading-relaxed max-w-lg italic">"{results.risk.risk.explanation}"</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Optimization Section (ID matches InputForm button) */}
+      <div id="optimize-section" className="scroll-mt-24 bg-[#111827] border border-zinc-800/60 rounded-xl p-6">
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Loan Optimization Engine</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                  <div className="p-4 bg-[#0b0f19] rounded-lg border border-zinc-800">
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold mb-1">Recommended Tenure</p>
+                      <p className="text-2xl font-bold text-white">{results.optimize?.recommended_tenure_years} Years</p>
+                  </div>
+                  <div className="p-4 bg-[#0b0f19] rounded-lg border border-emerald-500/20">
+                      <p className="text-[10px] text-emerald-500 uppercase font-bold mb-1">Potential Interest Saved</p>
+                      <p className="text-2xl font-bold text-emerald-400">₹{results.optimize?.interest_saved?.toLocaleString('en-IN')}</p>
+                  </div>
               </div>
-              <div className="text-3xl mt-4">{results.risk.risk.category}</div>
-            </div>
-            <div className="flex-1">
-              <p className="text-zinc-300 text-lg leading-relaxed">{results.risk.risk.explanation}</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Optimize Loan */}
-      {results.optimize && (
-        <motion.div 
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-zinc-900 border border-emerald-600/50 rounded-3xl p-12"
-        >
-          <h3 className="text-2xl font-semibold mb-8">AI Loan Optimizer</h3>
-          <div className="bg-gradient-to-br from-emerald-950 to-zinc-900 border border-emerald-500 rounded-3xl p-14 text-center">
-            <p className="text-emerald-400 text-sm tracking-widest">AI RECOMMENDS</p>
-            <div className="text-8xl font-bold mt-6 text-emerald-400">
-              {results.optimize.recommended_tenure_years} Years
-            </div>
-            <div className="text-4xl text-emerald-300 mt-4">
-              ₹{results.optimize.recommended_emi?.toLocaleString('en-IN')} / month
-            </div>
-            <div className="mt-10 text-xl">
-              Save <span className="font-bold text-2xl text-emerald-400">₹{results.optimize.interest_saved?.toLocaleString('en-IN')}</span> in interest
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Opportunity Cost - Interactive Controls */}
-      {results.opportunity && results.opportunity.chart_data && (
-        <motion.div 
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-zinc-900 border border-zinc-700 rounded-3xl p-12"
-        >
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h3 className="text-2xl font-semibold">Opportunity Cost Simulator</h3>
-              <p className="text-emerald-400">EMI vs Mutual Fund Growth @12%</p>
-            </div>
-            
-            {/* View Toggle */}
-            <div className="flex gap-2 bg-zinc-800 rounded-2xl p-1">
-              <button 
-                onClick={() => setOppView('line')}
-                className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${oppView === 'line' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}
-              >
-                Line
-              </button>
-              <button 
-                onClick={() => setOppView('area')}
-                className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${oppView === 'area' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}
-              >
-                Area
-              </button>
-            </div>
-          </div>
-
-          <div className="h-96">
-            <ResponsiveContainer width="100%" height="100%">
-              {oppView === 'line' ? (
-                <LineChart data={results.opportunity.chart_data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                  <XAxis dataKey="year" stroke="#52525b" />
-                  <YAxis tickFormatter={rupeeFormatter} stroke="#52525b" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Line type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" strokeWidth={5} name="EMI Paid" dot={{ r: 6 }} activeDot={{ r: 9 }} />
-                  <Line type="natural" dataKey="mutual_fund_growth" stroke="#10b981" strokeWidth={6} name="Mutual Fund Growth" dot={{ r: 6 }} activeDot={{ r: 9 }} />
-                </LineChart>
-              ) : (
-                <AreaChart data={results.opportunity.chart_data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                  <XAxis dataKey="year" stroke="#52525b" />
-                  <YAxis tickFormatter={rupeeFormatter} stroke="#52525b" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Area type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.2} name="EMI Paid" />
-                  <Area type="natural" dataKey="mutual_fund_growth" stroke="#10b981" fill="#10b981" fillOpacity={0.3} name="Mutual Fund Growth" />
-                </AreaChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Debt vs Rent - Interactive Controls */}
-      {results.debtvsrent && results.debtvsrent.debt_vs_rent_data && (
-        <motion.div 
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-zinc-900 border border-zinc-700 rounded-3xl p-12"
-        >
-          <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-            <div>
-              <h3 className="text-2xl font-semibold">Debt vs Rent Analyzer</h3>
-              <p className="text-emerald-400">20 Years Projection</p>
-            </div>
-
-            <div className="flex gap-4">
-              {/* Years Toggle */}
-              <div className="flex bg-zinc-800 rounded-2xl p-1">
-                {[10, 20].map(y => (
-                  <button 
-                    key={y}
-                    onClick={() => setShowYears(y)}
-                    className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${showYears === y ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}
-                  >
-                    {y} Years
-                  </button>
-                ))}
+              <div className="flex items-center">
+                  <p className="text-xs text-zinc-400 leading-relaxed italic border-l-2 border-emerald-500 pl-4">
+                      {results.optimize?.explanation}
+                  </p>
               </div>
-
-              {/* View Mode Toggle */}
-              <div className="flex bg-zinc-800 rounded-2xl p-1">
-                <button 
-                  onClick={() => setDebtViewMode('bar')}
-                  className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${debtViewMode === 'bar' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}
-                >
-                  Bar
-                </button>
-                <button 
-                  onClick={() => setDebtViewMode('mixed')}
-                  className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${debtViewMode === 'mixed' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}
-                >
-                  Mixed
-                </button>
-              </div>
-            </div>
           </div>
+      </div>
 
-          <div className="h-96">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={filteredDebtData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                <XAxis dataKey="year" stroke="#52525b" />
-                <YAxis tickFormatter={rupeeFormatter} stroke="#52525b" />
+      {/* 3. Opportunity Cost (ID matches InputForm button) */}
+      <div id="opportunity-section" className="scroll-mt-24 bg-[#111827] border border-zinc-800/60 rounded-xl p-5">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Growth vs Debt (Opportunity Cost)</h4>
+          <div className="flex bg-[#0b0f19] rounded-md p-0.5 border border-zinc-800">
+            <button onClick={() => setOppView('line')} className={`px-3 py-1 rounded text-[9px] font-bold transition-all ${oppView === 'line' ? 'bg-emerald-600 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>LINE</button>
+            <button onClick={() => setOppView('area')} className={`px-3 py-1 rounded text-[9px] font-bold transition-all ${oppView === 'area' ? 'bg-emerald-600 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>AREA</button>
+          </div>
+        </div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            {oppView === 'line' ? (
+              <LineChart data={results.opportunity?.chart_data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                <XAxis dataKey="year" fontSize={9} tickMargin={10} stroke="#4b5563" />
+                <YAxis tickFormatter={rupeeFormatter} fontSize={9} stroke="#4b5563" />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend />
+                <Line type="monotone" dataKey="cumulative_emi_paid" stroke="#ef4444" strokeWidth={2} dot={false} name="EMI Paid" />
+                <Line type="monotone" dataKey="investment_value" stroke="#10b981" strokeWidth={2} dot={false} name="SIP Value" />
+              </LineChart>
+            ) : (
+              <AreaChart data={results.opportunity?.chart_data}>
+                <defs>
+                  <linearGradient id="colorSIP" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                <XAxis dataKey="year" fontSize={9} stroke="#4b5563" />
+                <YAxis tickFormatter={rupeeFormatter} fontSize={9} stroke="#4b5563" />
+                <Tooltip content={<CustomTooltip />} />
+                <Area type="monotone" dataKey="investment_value" stroke="#10b981" fillOpacity={1} fill="url(#colorSIP)" name="SIP Value" />
+              </AreaChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-                <Bar dataKey="debt_cumulative" fill="#e11d48" name="Loan Cost" radius={[8,8,0,0]} />
-                <Bar dataKey="rent_cumulative" fill="#3b82f6" name="Rent Cost" radius={[8,8,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
+      {/* 4. Debt vs Rent (ID matches InputForm button) */}
+      <div id="rent-section" className="scroll-mt-24 bg-[#111827] border border-zinc-800/60 rounded-xl p-5">
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Buy vs Rent Cost Analysis</h4>
+          <div className="flex gap-2">
+            {[10, 20].map(y => (
+              <button key={y} onClick={() => setShowYears(y)} className={`text-[9px] font-bold px-2 py-1 rounded border ${showYears === y ? 'border-emerald-500 text-emerald-500 bg-emerald-500/5' : 'border-zinc-800 text-zinc-500'}`}>
+                {y}Y
+              </button>
+            ))}
           </div>
-        </motion.div>
-      )}
+        </div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={filteredDebtData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+              <XAxis dataKey="year" fontSize={9} stroke="#4b5563" />
+              <YAxis tickFormatter={rupeeFormatter} fontSize={9} stroke="#4b5563" />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="debt_cumulative" fill="#ef4444" name="Loan Cost" radius={[2, 2, 0, 0]} barSize={8} />
+              <Bar dataKey="rent_cumulative" fill="#3b82f6" name="Rent Cost" radius={[2, 2, 0, 0]} barSize={8} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+    </motion.div>
+  );
+}
+
+// Strategy Card Sub-component
+function StrategyCard({ title, rate, emi, stress, desc, highlighted }) {
+  return (
+    <motion.div 
+      whileHover={{ y: -4, borderColor: highlighted ? '#10b981' : '#3f3f46' }}
+      className={`p-5 rounded-xl border transition-all flex flex-col justify-between ${
+        highlighted ? 'bg-[#1a2333] border-emerald-500/40 shadow-lg shadow-emerald-950/20' : 'bg-[#111827] border-zinc-800/60'
+      }`}
+    >
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <h5 className="text-[11px] font-bold text-zinc-100 uppercase tracking-tighter">{title}</h5>
+          <span className={`text-[8px] px-1.5 py-0.5 rounded-sm font-bold uppercase ${highlighted ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}>
+            {stress}
+          </span>
+        </div>
+        <p className="text-[10px] text-zinc-500 mb-4 leading-tight">{desc}</p>
+        <div className="space-y-1.5 border-t border-zinc-800/50 pt-3">
+          <div className="flex justify-between text-[11px]"><span className="text-zinc-500 font-medium">Interest Rate</span> <span className="text-zinc-200">{rate}</span></div>
+          <div className="flex justify-between text-[11px]"><span className="text-zinc-500 font-medium">Monthly EMI</span> <span className="text-emerald-400 font-bold">₹{Math.round(emi).toLocaleString('en-IN')}</span></div>
+        </div>
+      </div>
     </motion.div>
   );
 }

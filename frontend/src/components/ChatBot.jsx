@@ -1,111 +1,99 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 
-export default function Chatbot({ results }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ChatBot({ results }) {
   const [messages, setMessages] = useState([
-    { type: 'bot', text: "Hi! I'm your Prapti AI Assistant. Ask me anything about your loan analysis." }
+    { role: 'assistant', content: "I've analyzed your data. You can ask me about your risk score, EMI optimization, or investment trade-offs." }
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef(null);
 
-  const handleSend = () => {
+  // Auto-scroll to latest message
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
     if (!input.trim()) return;
 
-    setMessages(prev => [...prev, { type: 'user', text: input }]);
-
-    let reply = "Let me think...";
-
-    const query = input.toLowerCase();
-
-    if (results.risk) {
-      if (query.includes("risk") || query.includes("score")) {
-        reply = `Your Debt Trap Risk Score is ${results.risk.risk.risk_score}/100 (${results.risk.risk.category}). ${results.risk.risk.explanation}`;
-      }
-    }
-
-    if (results.optimize) {
-      if (query.includes("optimize") || query.includes("tenure") || query.includes("best")) {
-        reply = `AI recommends ${results.optimize.recommended_tenure_years} years tenure. This will save you ₹${results.optimize.interest_saved?.toLocaleString('en-IN')} in interest.`;
-      }
-    }
-
-    if (results.opportunity) {
-      if (query.includes("opportunity") || query.includes("invest") || query.includes("mutual")) {
-        reply = "If you invested your EMI in mutual funds instead of paying the loan, you could grow your money significantly at 12% return!";
-      }
-    }
-
-    if (results.debtvsrent) {
-      if (query.includes("rent") || query.includes("buy") || query.includes("debt vs")) {
-        reply = "Over 20 years, buying with loan is usually better than renting in the long run, but it depends on your risk tolerance.";
-      }
-    }
-
-    setTimeout(() => {
-      setMessages(prev => [...prev, { type: 'bot', text: reply }]);
-    }, 900);
-
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsTyping(true);
+
+    try {
+      // We pass the current 'results' to the backend so the AI knows the context
+      const response = await axios.post('http://localhost:8000/api/chat', {
+        message: input,
+        context: results 
+      });
+
+      setMessages(prev => [...prev, { role: 'assistant', content: response.data.reply }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'assistant', content: "I'm having trouble connecting to the brain. Please try again." }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
-    <>
-      <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        whileHover={{ scale: 1.1 }}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-3xl shadow-2xl flex items-center justify-center text-4xl z-50 hover:shadow-emerald-500/50 transition-shadow"
-      >
-        🤖
-      </motion.button>
-
-      <AnimatePresence>
-        {isOpen && (
+    <div className="flex flex-col h-full bg-[#0b0f19]">
+      {/* Message Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+        {messages.map((msg, i) => (
           <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-28 right-8 w-96 bg-zinc-900 border border-zinc-700 rounded-3xl shadow-2xl overflow-hidden z-50"
+            initial={{ opacity: 0, x: msg.role === 'user' ? 10 : -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            key={i}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-5 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">🤖</span>
-                <div>
-                  <p className="font-semibold">Prapti AI Assistant</p>
-                  <p className="text-xs opacity-75">Ask about your analysis</p>
-                </div>
-              </div>
-              <button onClick={() => setIsOpen(false)} className="text-3xl leading-none">×</button>
-            </div>
-
-            <div className="h-96 p-5 overflow-y-auto bg-zinc-950 space-y-5">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] px-6 py-4 rounded-3xl ${
-                    msg.type === 'user' 
-                      ? 'bg-emerald-500 text-white' 
-                      : 'bg-zinc-800 text-zinc-200'
-                  }`}>
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 border-t border-zinc-700">
-              <div className="flex gap-3">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Ask anything about your loan..."
-                  className="flex-1 bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500"
-                />
-                <button onClick={handleSend} className="bg-emerald-500 px-8 rounded-2xl font-medium">Send</button>
-              </div>
+            <div className={`max-w-[85%] px-3 py-2 rounded-xl text-[11px] leading-relaxed ${
+              msg.role === 'user' 
+                ? 'bg-emerald-600 text-white rounded-tr-none' 
+                : 'bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-tl-none'
+            }`}>
+              {msg.content}
             </div>
           </motion.div>
+        ))}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-xl rounded-tl-none flex gap-1">
+              <span className="w-1 h-1 bg-zinc-500 rounded-full animate-bounce" />
+              <span className="w-1 h-1 bg-zinc-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1 h-1 bg-zinc-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+            </div>
+          </div>
         )}
-      </AnimatePresence>
-    </>
+        <div ref={scrollRef} />
+      </div>
+
+      {/* Input Area */}
+      <form onSubmit={sendMessage} className="p-4 border-t border-zinc-800/50 bg-zinc-900/20">
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask Prapti AI..."
+            className="w-full bg-[#0b0f19] border border-zinc-800 rounded-lg pl-3 pr-10 py-2 text-[11px] text-zinc-200 focus:outline-none focus:border-emerald-500/50 transition-all placeholder:text-zinc-600"
+          />
+          <button 
+            type="submit"
+            className="absolute right-2 text-emerald-500 hover:text-emerald-400 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 rotate-90">
+              <path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925a.5.5 0 00.16.242l6.132 3.594-6.132 3.594a.5.5 0 00-.16.242L2.279 16.76a.75.75 0 00.826.95l12.75-5.25a.75.75 0 000-1.42l-12.75-5.25z" />
+            </svg>
+          </button>
+        </div>
+        <p className="text-[8px] text-zinc-600 mt-2 text-center uppercase tracking-widest font-bold">
+          Powered by Prapti Intelligence
+        </p>
+      </form>
+    </div>
   );
 }
