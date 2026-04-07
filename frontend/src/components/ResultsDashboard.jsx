@@ -33,6 +33,7 @@ export default function ResultsDashboard({ results, formData }) {
   const [showStressTest, setShowStressTest] = useState(false);
 
   // Fallback for empty results
+  //completed
   if (!results || (!results.risk && !results.optimize)) {
     return (
       <div className="py-20 text-center border border-dashed border-zinc-800 rounded-3xl bg-zinc-900/10">
