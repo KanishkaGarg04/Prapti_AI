@@ -4,7 +4,6 @@ export default function InputForm({
   formData, 
   handleInputChange, 
   calculateRisk, 
-  scrollToSection, 
   onSave, 
   loading 
 }) {
@@ -103,8 +102,8 @@ export default function InputForm({
         </div>
       </div>
 
-      {/* Main Action Area - Dual Button Setup */}
-      <div className="pt-6 space-y-6">
+      {/* Main Action Area - Dual Button Setup Restored */}
+      <div className="pt-6">
         <div className="flex flex-col md:flex-row gap-4">
           
           {/* PRIMARY: Run New Analysis */}
@@ -123,36 +122,19 @@ export default function InputForm({
             whileHover={{ scale: 1.01, borderColor: '#10b981' }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              if (onSave) onSave(); // Saves current results to baseline
-              calculateRisk();      // Runs new computation
+              // Note: calculateRisk in App.jsx already handles saving the old results
+              calculateRisk();      
             }}
             disabled={loading}
             className="flex-1 bg-transparent border-2 border-zinc-800 text-zinc-300 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:text-emerald-400 disabled:opacity-50 flex items-center justify-center gap-3"
           >
             Compare with Stored Model
           </motion.button>
-
         </div>
 
-        {/* Section Quick-Links */}
-        <div className="flex flex-wrap items-center justify-center gap-6 border-t border-zinc-800/50 pt-8">
-          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Jump To:</span>
-          {[
-            { label: 'Risk Metrics', id: 'risk-section' },
-            { label: 'Growth/SIP', id: 'opportunity-section' },
-            { label: 'Buy vs Rent', id: 'rent-section' }
-          ].map((tool) => (
-            <button 
-              key={tool.label}
-              type="button"
-              onClick={() => scrollToSection(tool.id)}
-              className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-emerald-400 transition-all relative group"
-            >
-              {tool.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
-            </button>
-          ))}
-        </div>
+        <p className="text-center mt-6 text-[9px] font-bold text-zinc-700 uppercase tracking-[0.3em]">
+          Comparison mode creates a side-by-side delta analysis
+        </p>
       </div>
     </motion.div>
   );

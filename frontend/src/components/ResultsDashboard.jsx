@@ -32,7 +32,6 @@ export default function ResultsDashboard({ results, formData }) {
   const [showYears, setShowYears] = useState(20);
   const [showStressTest, setShowStressTest] = useState(false);
 
-  // Generate a unique key based on results to force re-render during comparison
   const instanceKey = useMemo(() => JSON.stringify(results?.risk?.emi_monthly), [results]);
 
   if (!results || (!results.risk && !results.optimize)) {
@@ -56,9 +55,9 @@ export default function ResultsDashboard({ results, formData }) {
       className="space-y-16 pb-20"
     >
       {/* --- 1. STRATEGY & RISK SECTION --- */}
-      <div id="risk-section" className="scroll-mt-24 space-y-10">
+      {/* ID MATCHED TO APP.JSX NAV: risk-metrics */}
+      <div id="risk-metrics" className="scroll-mt-32 space-y-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Dynamic calculation: Use actual optimized data if available, otherwise fall back to risk data */}
           <StrategyCard 
             title="Conservative" 
             rate={`${formData.interest_rate}%`} 
@@ -97,50 +96,10 @@ export default function ResultsDashboard({ results, formData }) {
         </div>
       </div>
 
-      {/* --- 2. FINANCIAL SHOCK SIMULATOR --- */}
-      <div className={`scroll-mt-24 transition-all duration-500 rounded-[2rem] p-8 border ${showStressTest ? 'bg-rose-950/10 border-rose-500/50 shadow-[0_0_50px_rgba(244,63,94,0.2)]' : 'bg-[#111827]/50 border-zinc-800/60'}`}>
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h4 className={`text-xs font-black uppercase tracking-[0.3em] ${showStressTest ? 'text-rose-400' : 'text-zinc-500'}`}>
-              {showStressTest ? "🚨 Live Stress Simulation" : "Resilience Stress Test"}
-            </h4>
-            <p className="text-sm text-zinc-400 mt-2 font-medium">Analyze portfolio under extreme conditions</p>
-          </div>
-          <button 
-            onClick={() => setShowStressTest(!showStressTest)}
-            className={`px-6 py-3 rounded-xl text-xs font-black transition-all border tracking-widest ${showStressTest ? 'bg-rose-500 text-white border-rose-400 animate-pulse' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'}`}
-          >
-            {showStressTest ? "DEACTIVATE PANIC MODE" : "⚡ RUN STRESS TEST"}
-          </button>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {showStressTest && (
-            <motion.div key="stress-grid" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                {shockScenarios?.map((shock, index) => (
-                  <motion.div key={index} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.1 }} className={`p-6 rounded-2xl border ${shock.safe ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/10'}`}>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{shock.type}</span>
-                      <span className={`text-[10px] px-2 py-1 rounded-lg font-black ${shock.risk_level === 'Safe' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
-                        {shock.risk_level.toUpperCase()}
-                      </span>
-                    </div>
-                    <p className="text-xl text-zinc-100 font-black mb-2">
-                      {shock.new_income ? `₹${Math.round(shock.new_income).toLocaleString()}/mo` : shock.new_rate ? `${shock.new_rate}% Rate` : `Impact Analysis`}
-                    </p>
-                    <p className="text-sm text-zinc-400 italic leading-relaxed">"{shock.message}"</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* --- 3. STACKED CHARTS SECTION --- */}
-      <div className="space-y-12">
-        <div id="opportunity-section" className="scroll-mt-24 bg-[#111827] border border-zinc-800/60 rounded-[3rem] p-10">
+      {/* --- 2. GROWTH / OPPORTUNITY SECTION --- */}
+      {/* ID MATCHED TO APP.JSX NAV: growth-sip */}
+      <div id="growth-sip" className="scroll-mt-32 space-y-12">
+        <div className="bg-[#111827] border border-zinc-800/60 rounded-[3rem] p-10">
           <div className="flex justify-between items-center mb-10 text-center md:text-left">
             <div>
               <h4 className="text-sm font-black text-zinc-500 uppercase tracking-[0.4em]">Growth vs Debt</h4>
@@ -151,7 +110,7 @@ export default function ResultsDashboard({ results, formData }) {
               <button onClick={() => setOppView('area')} className={`px-4 md:px-6 py-2.5 rounded-lg text-xs font-black transition-all ${oppView === 'area' ? 'bg-emerald-600 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>AREA</button>
             </div>
           </div>
-          <div className="h-[400px] md:h-[500px] w-full">
+          <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               {oppView === 'line' ? (
                 <LineChart data={results.opportunity?.chart_data}>
@@ -180,52 +139,54 @@ export default function ResultsDashboard({ results, formData }) {
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
 
-        <div id="rent-section" className="scroll-mt-24 bg-[#111827] border border-zinc-800/60 rounded-[3rem] p-10">
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-10 gap-6">
-            <div>
-              <h4 className="text-sm font-black text-zinc-500 uppercase tracking-[0.4em]">Buy vs Rent Analysis</h4>
-              <p className="text-zinc-400 mt-2 font-medium italic text-sm">Cumulative expense comparison</p>
-            </div>
-            <div className="flex gap-2 md:gap-4 overflow-x-auto pb-2 md:pb-0">
-              {[10, 20, 30].map(y => (
-                <button key={y} onClick={() => setShowYears(y)} className={`text-[10px] md:text-xs font-black px-4 md:px-6 py-2.5 rounded-xl border transition-all whitespace-nowrap ${showYears === y ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-800 text-zinc-500'}`}>
-                  {y}Y HORIZON
-                </button>
-              ))}
-            </div>
+      {/* --- 3. BUY VS RENT SECTION --- */}
+      {/* ID MATCHED TO APP.JSX NAV: buy-vs-rent */}
+      <div id="buy-vs-rent" className="scroll-mt-32 bg-[#111827] border border-zinc-800/60 rounded-[3rem] p-10">
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-10 gap-6">
+          <div>
+            <h4 className="text-sm font-black text-zinc-500 uppercase tracking-[0.4em]">Buy vs Rent Analysis</h4>
+            <p className="text-zinc-400 mt-2 font-medium italic text-sm">Cumulative expense comparison</p>
           </div>
-          <div className="h-[400px] md:h-[500px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={filteredDebtData} margin={{ left: -20, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                <XAxis dataKey="year" fontSize={10} stroke="#4b5563" fontWeight={800} />
-                <YAxis tickFormatter={rupeeFormatter} fontSize={10} stroke="#4b5563" fontWeight={800} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="debt_cumulative" fill="#ef4444" name="Loan Cost" radius={[4, 4, 0, 0]} barSize={15} />
-                <Bar dataKey="rent_cumulative" fill="#3b82f6" name="Rent Cost" radius={[4, 4, 0, 0]} barSize={15} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex gap-2">
+            {[10, 20, 30].map(y => (
+              <button key={y} onClick={() => setShowYears(y)} className={`text-[10px] font-black px-4 py-2 rounded-xl border transition-all ${showYears === y ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10' : 'border-zinc-800 text-zinc-500'}`}>
+                {y}Y
+              </button>
+            ))}
           </div>
+        </div>
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={filteredDebtData} margin={{ left: -20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+              <XAxis dataKey="year" fontSize={10} stroke="#4b5563" fontWeight={800} />
+              <YAxis tickFormatter={rupeeFormatter} fontSize={10} stroke="#4b5563" fontWeight={800} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="debt_cumulative" fill="#ef4444" name="Loan Cost" radius={[4, 4, 0, 0]} barSize={15} />
+              <Bar dataKey="rent_cumulative" fill="#3b82f6" name="Rent Cost" radius={[4, 4, 0, 0]} barSize={15} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* --- 4. OPTIMIZATION SECTION --- */}
-      <div id="optimize-section" className="scroll-mt-24 bg-gradient-to-br from-[#111827] to-[#0b0f19] border border-zinc-800/60 rounded-[3rem] p-12">
-        <h4 className="text-xs font-black text-zinc-500 uppercase tracking-[0.3em] mb-8">Optimization Engine</h4>
+      {/* --- 4. OPTIMIZATION SUMMARY --- */}
+      <div className="bg-gradient-to-br from-[#111827] to-[#0b0f19] border border-zinc-800/60 rounded-[3rem] p-12">
+        <h4 className="text-xs font-black text-zinc-500 uppercase tracking-[0.3em] mb-8">Neural Optimization</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="space-y-8">
-            <div className="p-8 bg-zinc-950/50 rounded-[2rem] border border-zinc-800 text-center md:text-left">
-              <p className="text-xs text-zinc-500 uppercase font-black mb-3 tracking-widest">Recommended Tenure</p>
-              <p className="text-4xl md:text-5xl font-black text-white">{results.optimize?.recommended_tenure_years || '--'} <span className="text-2xl text-zinc-600">Years</span></p>
+            <div className="p-8 bg-zinc-950/50 rounded-[2rem] border border-zinc-800">
+              <p className="text-xs text-zinc-500 uppercase font-black mb-3 tracking-widest text-center md:text-left">Recommended Tenure</p>
+              <p className="text-4xl md:text-5xl font-black text-white text-center md:text-left">{results.optimize?.recommended_tenure_years || '--'} <span className="text-2xl text-zinc-600">Years</span></p>
             </div>
-            <div className="p-8 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/20 text-center md:text-left">
-              <p className="text-xs text-emerald-500 uppercase font-black mb-3 tracking-widest">Potential Interest Saved</p>
-              <p className="text-4xl md:text-5xl font-black text-emerald-400 tracking-tight">₹{results.optimize?.interest_saved?.toLocaleString('en-IN') || '0'}</p>
+            <div className="p-8 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/20">
+              <p className="text-xs text-emerald-500 uppercase font-black mb-3 tracking-widest text-center md:text-left">Potential Interest Saved</p>
+              <p className="text-4xl md:text-5xl font-black text-emerald-400 tracking-tight text-center md:text-left">₹{results.optimize?.interest_saved?.toLocaleString('en-IN') || '0'}</p>
             </div>
           </div>
           <div className="flex items-center">
-            <p className="text-lg md:text-xl text-zinc-400 leading-relaxed italic border-l-4 border-emerald-500 pl-6 md:pl-10 font-medium">
+            <p className="text-lg text-zinc-400 leading-relaxed italic border-l-4 border-emerald-500 pl-10 font-medium">
               {results.optimize?.explanation}
             </p>
           </div>
@@ -239,7 +200,7 @@ function StrategyCard({ title, rate, emi, stress, desc, highlighted }) {
   return (
     <motion.div 
       whileHover={{ y: -5, borderColor: highlighted ? '#10b981' : '#52525b' }}
-      className={`p-8 md:p-10 rounded-[2.5rem] border transition-all flex flex-col justify-between ${highlighted ? 'bg-[#1a2333] border-emerald-500/40 shadow-2xl shadow-emerald-950/40' : 'bg-[#111827] border-zinc-800/60'}`}
+      className={`p-8 rounded-[2.5rem] border transition-all flex flex-col justify-between ${highlighted ? 'bg-[#1a2333] border-emerald-500/40 shadow-2xl shadow-emerald-950/40' : 'bg-[#111827] border-zinc-800/60'}`}
     >
       <div>
         <div className="flex justify-between items-center mb-6">
@@ -248,7 +209,7 @@ function StrategyCard({ title, rate, emi, stress, desc, highlighted }) {
             {stress}
           </span>
         </div>
-        <p className="text-sm md:text-base text-zinc-500 mb-10 leading-relaxed font-medium">{desc}</p>
+        <p className="text-sm text-zinc-500 mb-10 leading-relaxed font-medium">{desc}</p>
         <div className="space-y-4 border-t border-zinc-800/80 pt-8">
           <div className="flex justify-between text-base">
             <span className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">ROI</span> 
@@ -256,7 +217,7 @@ function StrategyCard({ title, rate, emi, stress, desc, highlighted }) {
           </div>
           <div className="flex justify-between items-baseline">
             <span className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Monthly EMI</span> 
-            <span className="text-2xl md:text-3xl text-emerald-400 font-black tracking-tight">₹{Math.round(emi).toLocaleString('en-IN')}</span>
+            <span className="text-2xl text-emerald-400 font-black tracking-tight">₹{Math.round(emi).toLocaleString('en-IN')}</span>
           </div>
         </div>
       </div>
