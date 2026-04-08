@@ -1,28 +1,49 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence for smooth popup
+import { motion, AnimatePresence } from 'framer-motion';
 import InputForm from './components/InputForm';
 import ResultsDashboard from './components/ResultsDashboard';
 import Chatbot from './components/ChatBot';
 
 const API_BASE = 'http://localhost:8000';
 
-// --- LANDING SUB-COMPONENTS (Hero & Bento) ---
+// --- LANDING SUB-COMPONENTS ---
 const Hero = ({ onStart }) => (
-  <section className="py-24 px-6 text-center relative overflow-hidden">
-    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-4xl mx-auto space-y-8">
-      <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-[0.2em]">
+  <section className="min-h-[80vh] flex items-center justify-center py-24 px-6 relative overflow-hidden">
+    {/* Decorative background blurs to fill empty space */}
+    <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+    <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
+
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      className="max-w-6xl mx-auto flex flex-col items-center text-center space-y-10 relative z-10"
+    >
+      <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-[12px] font-bold uppercase tracking-[0.4em]">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
         Neural Logic v1.0 Live
       </div>
-      <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.1] tracking-tight">
+      
+      <h1 className="text-6xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter">
         Master Your Debt. <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">Before It Masters You.</span>
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-200 to-cyan-500">
+          Before It Masters You.
+        </span>
       </h1>
-      <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed font-medium">
-        Stop using basic calculators. Use a high-fidelity resilience engine to simulate market shocks and optimize interest.
+      
+      <p className="text-xl md:text-2xl text-zinc-400 max-w-4xl mx-auto leading-relaxed font-medium tracking-wide">
+        Traditional calculators ignore the real world. Our high-fidelity engine 
+        simulates market volatility, income shocks, and opportunity costs.
       </p>
+
       <div className="pt-6">
-        <button onClick={onStart} className="px-10 py-5 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-full transition-all hover:scale-105 shadow-2xl shadow-emerald-500/30 uppercase tracking-widest text-xs">
+        <button 
+          onClick={onStart} 
+          className="px-12 py-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-full transition-all hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.2)] uppercase tracking-[0.2em] text-sm"
+        >
           Begin Neural Analysis
         </button>
       </div>
@@ -37,12 +58,12 @@ const BentoFeatures = () => {
     { title: "Opportunity Cost", desc: "See the fortune you lose vs. investing in 12% SIPs.", icon: "💰" }
   ];
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 pb-24">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-10 pb-32">
       {feats.map((f, i) => (
-        <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="p-8 rounded-3xl bg-zinc-900/40 border border-zinc-800/50 hover:border-emerald-500/40 transition-all group">
-          <div className="text-3xl mb-4 group-hover:scale-125 transition-transform duration-300">{f.icon}</div>
-          <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
-          <p className="text-sm text-zinc-500 leading-relaxed font-medium">{f.desc}</p>
+        <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="p-10 rounded-[2.5rem] bg-zinc-900/30 border border-zinc-800/50 hover:border-emerald-500/40 transition-all group relative overflow-hidden">
+          <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
+          <h3 className="text-white font-bold text-xl mb-3 tracking-tight">{f.title}</h3>
+          <p className="text-zinc-500 leading-relaxed font-medium">{f.desc}</p>
         </motion.div>
       ))}
     </div>
@@ -61,8 +82,9 @@ function App() {
   });
 
   const [results, setResults] = useState({ risk: null, optimize: null, opportunity: null, debtvsrent: null, shocks: null });
+  const [savedResults, setSavedResults] = useState(null); // For Comparison Mode
   const [loading, setLoading] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false); // NEW: Toggle state for Chat
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -71,7 +93,11 @@ function App() {
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
-    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (element) {
+      const yOffset = -100; // Offset for fixed navbar
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
   };
 
   const runAnalysis = async () => {
@@ -86,13 +112,20 @@ function App() {
         axios.post(`${API_BASE}/api/simulate-shocks`, formData),
       ]);
       const getPayload = (res) => (res.status === 'fulfilled' ? res.value.data : null);
-      setResults({ 
+      
+      const newResults = { 
         risk: getPayload(responses[0]), optimize: getPayload(responses[1]), 
         opportunity: getPayload(responses[2]), debtvsrent: getPayload(responses[3]), 
         shocks: getPayload(responses[4]) 
-      });
+      };
+
+      setResults(newResults);
       setTimeout(() => scrollToSection('results-anchor'), 150);
     } catch (err) { console.error(err); } finally { setLoading(false); }
+  };
+
+  const handleSaveForComparison = () => {
+    setSavedResults({...results});
   };
 
   return (
@@ -114,25 +147,52 @@ function App() {
           <Hero onStart={() => scrollToSection('app-core')} />
           <BentoFeatures />
 
-          <div id="app-core" className="max-w-4xl mx-auto p-10 md:p-14 space-y-12 relative scroll-mt-20">
-            <header className="space-y-3 relative">
-              <h2 className="text-3xl font-bold text-white tracking-tight">Financial Resilience <span className="text-emerald-500 font-black">Engine</span></h2>
-              <p className="text-xs text-zinc-500 uppercase font-bold tracking-[0.2em]">Deep-Dive Debt Analysis & Stress Testing</p>
+          <div id="app-core" className="max-w-6xl mx-auto p-10 md:p-14 space-y-12 relative scroll-mt-20">
+            <header className="space-y-3 text-center">
+              <h2 className="text-4xl font-bold text-white tracking-tight">Intelligence <span className="text-emerald-500">Dashboard</span></h2>
+              <p className="text-xs text-zinc-500 uppercase font-bold tracking-[0.3em]">Deep-Dive Debt Analysis & Stress Testing</p>
             </header>
 
-            <section className="bg-[#111827] border border-zinc-800/60 rounded-3xl shadow-2xl p-8 md:p-12 relative overflow-hidden">
-               <InputForm formData={formData} handleInputChange={handleInputChange} calculateRisk={runAnalysis} loading={loading} />
+            <section className="bg-[#111827]/50 border border-zinc-800/60 rounded-[2.5rem] shadow-2xl p-8 md:p-12 relative overflow-hidden">
+               <InputForm 
+                  formData={formData} 
+                  handleInputChange={handleInputChange} 
+                  calculateRisk={runAnalysis} 
+                  loading={loading} 
+                  scrollToSection={scrollToSection} // Fixes the Optimize/Opportunity buttons
+                  onSave={handleSaveForComparison} // For future Comparison Button in Form
+               />
             </section>
 
-            <div id="results-anchor" className="scroll-mt-20 min-h-[600px]">
-              <ResultsDashboard results={results} formData={formData} />
+            {/* Results with Comparison Logic */}
+            <div id="results-anchor" className="scroll-mt-20 min-h-[600px] space-y-12">
+              {savedResults && (
+                <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
+                  <span className="text-emerald-400 text-xs font-black uppercase tracking-widest">Comparison Mode Active: New Analysis vs Saved Scenario</span>
+                  <button onClick={() => setSavedResults(null)} className="text-[10px] text-zinc-500 hover:text-white underline uppercase">Reset</button>
+                </div>
+              )}
+
+              <div className={savedResults ? "grid grid-cols-1 lg:grid-cols-2 gap-8" : "w-full"}>
+                <div className="space-y-4">
+                  {savedResults && <h4 className="text-[10px] text-emerald-500 font-bold uppercase tracking-[0.2em] text-center">Current Analysis</h4>}
+                  <ResultsDashboard results={results} formData={formData} />
+                </div>
+                
+                {savedResults && (
+                  <div className="space-y-4 opacity-60 grayscale-[0.3]">
+                    <h4 className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] text-center">Saved Scenario</h4>
+                    <ResultsDashboard results={savedResults} formData={formData} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <footer className="py-20 text-center opacity-30"><p className="text-xs uppercase tracking-[0.5em]">Mathematical Integrity Secured • 2026</p></footer>
         </main>
       </div>
 
-      {/* --- NEW: FLOATING CHATBOT ICON --- */}
+      {/* Floating Chatbot */}
       <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
         <AnimatePresence>
           {isChatOpen && (
@@ -165,7 +225,7 @@ function App() {
           className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/20 transition-transform active:scale-95"
         >
           {isChatOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           ) : (

@@ -4,36 +4,34 @@ export default function InputForm({
   formData, 
   handleInputChange, 
   calculateRisk, 
-  scrollToSection, // Received from App.jsx
+  scrollToSection, 
+  onSave, 
   loading 
 }) {
-  // Shared input style for consistency
-  const inputClass = "w-full bg-[#0b0f19] border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all";
-  const labelClass = "block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5";
+  // Increased base font sizes and padding for a better "premium" feel
+  const inputClass = "w-full bg-[#0b0f19] border border-zinc-800 rounded-xl px-4 py-3 text-base text-zinc-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-zinc-700";
+  const labelClass = "block text-[11px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2 ml-1";
 
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-8"
     >
-      {/* 2-Column Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-        
-        {/* Loan Amount */}
+      {/* Input Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
         <div className="md:col-span-2">
-          <label className={labelClass}>Loan Amount (₹)</label>
+          <label className={labelClass}>Principal Loan Amount (₹)</label>
           <input 
             type="number" 
             name="loan_amount" 
             placeholder="e.g. 50,00,000"
             value={formData.loan_amount} 
             onChange={handleInputChange}
-            className={`${inputClass} text-base font-medium`} 
+            className={`${inputClass} text-xl font-black text-emerald-400`} 
           />
         </div>
 
-        {/* Interest Rate */}
         <div>
           <label className={labelClass}>Interest Rate (% p.a.)</label>
           <input 
@@ -42,31 +40,31 @@ export default function InputForm({
             name="interest_rate" 
             value={formData.interest_rate} 
             onChange={handleInputChange}
-            className={inputClass}
+            className={`${inputClass} font-bold`}
           />
         </div>
 
-        {/* Tenure Slider + Display */}
         <div>
-          <div className="flex justify-between items-center mb-1.5">
-            <label className={labelClass.replace('mb-1.5', '')}>Tenure</label>
-            <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded">
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">Tenure</label>
+            <span className="text-xs font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
               {formData.tenure_years} Years
             </span>
           </div>
-          <input 
-            type="range" 
-            min="1" max="30" 
-            name="tenure_years" 
-            value={formData.tenure_years} 
-            onChange={handleInputChange}
-            className="w-full accent-emerald-500 h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer mt-2"
-          />
+          <div className="pt-2 px-1">
+            <input 
+              type="range" 
+              min="1" max="30" 
+              name="tenure_years" 
+              value={formData.tenure_years} 
+              onChange={handleInputChange}
+              className="w-full accent-emerald-500 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
         </div>
 
-        {/* Monthly Income */}
         <div>
-          <label className={labelClass}>Monthly Income (₹)</label>
+          <label className={labelClass}>Monthly Take-home (₹)</label>
           <input 
             type="number" 
             name="monthly_income" 
@@ -76,9 +74,8 @@ export default function InputForm({
           />
         </div>
 
-        {/* Existing EMIs */}
         <div>
-          <label className={labelClass}>Existing EMIs (₹)</label>
+          <label className={labelClass}>Existing Monthly Obligations (₹)</label>
           <input 
             type="number" 
             name="existing_emis" 
@@ -88,54 +85,69 @@ export default function InputForm({
           />
         </div>
 
-        {/* Job Type */}
         <div className="md:col-span-2">
-          <label className={labelClass}>Employment Type</label>
+          <label className={labelClass}>Employment Sector</label>
           <div className="relative">
             <select 
               name="job_type" 
               value={formData.job_type} 
               onChange={handleInputChange}
-              className={`${inputClass} appearance-none cursor-pointer pr-10`}
+              className={`${inputClass} appearance-none cursor-pointer font-bold`}
             >
-              <option value="govt">Government Job</option>
-              <option value="private">Private Job</option>
-              <option value="freelance">Freelance</option>
-              <option value="self_employed">Self Employed</option>
+              <option value="govt">Government / Public Sector</option>
+              <option value="private">Private Corporate</option>
+              <option value="freelance">Freelance / Gig Economy</option>
+              <option value="self_employed">Business Owner / Self-Employed</option>
             </select>
-            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-              <svg className="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
+              ▼
             </div>
           </div>
         </div>
       </div>
 
-      {/* Optimized Action Buttons Section */}
-      <div className="pt-4 space-y-3">
-        {/* Primary Action - Runs all API calls */}
-        <motion.button 
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-          onClick={calculateRisk}
-          disabled={loading}
-          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Analyzing Financial Parameters..." : "Run Full Financial Analysis"}
-        </motion.button>
+      {/* Main Action Area */}
+      <div className="pt-6 space-y-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Combined Primary Button */}
+          <motion.button 
+            whileHover={{ scale: 1.01, backgroundColor: '#10b981' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              calculateRisk();
+              if(onSave) onSave(); // Triggers both actions for comparison mode
+            }}
+            disabled={loading}
+            className="flex-[3] bg-emerald-600 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all shadow-[0_20px_40px_rgba(16,185,129,0.15)] disabled:opacity-50 flex items-center justify-center gap-3"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            ) : "Execute Full Financial Analysis & Comparison"}
+          </motion.button>
+        </div>
 
-        {/* Navigation Actions - Scrolls to specific results sections */}
-        <div className="grid grid-cols-3 gap-2">
+        {/* Section Quick-Links */}
+        <div className="flex flex-wrap items-center justify-center gap-6 border-t border-zinc-800/50 pt-8">
+          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em]">Jump To:</span>
           {[
-            { label: 'Optimize', id: 'optimize-section' },
-            { label: 'Opportunity', id: 'opportunity-section' },
-            { label: 'Rent vs Buy', id: 'rent-section' }
+            { label: 'Risk Metrics', id: 'risk-section' },
+            { label: 'Growth/SIP', id: 'opportunity-section' },
+            { label: 'Buy vs Rent', id: 'rent-section' }
           ].map((tool) => (
             <button 
               key={tool.label}
+              type="button"
               onClick={() => scrollToSection(tool.id)}
-              className="py-2 bg-zinc-800/30 hover:bg-zinc-800 border border-zinc-700/50 rounded-md text-[9px] font-bold uppercase tracking-wider text-zinc-500 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
+              className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-emerald-400 transition-all relative group"
             >
               {tool.label}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-500 transition-all group-hover:w-full"></span>
             </button>
           ))}
         </div>
