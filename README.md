@@ -88,7 +88,6 @@ Prapti AI introduces a **Neural Financial Engine** that simulates multiple repay
 
 ![Comparison](./screenshots/comparison.png)
 
-> 📌 Place your images inside the `/screenshots` folder and update file names accordingly.
 
 ---
 
