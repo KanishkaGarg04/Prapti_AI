@@ -9,40 +9,30 @@ const API_BASE = 'http://localhost:8000';
 
 // --- LANDING SUB-COMPONENTS ---
 const Hero = ({ onStart }) => (
-  <section className="min-h-[80vh] flex items-center justify-center py-24 px-6 relative overflow-hidden">
-    {/* Decorative background blurs to fill empty space */}
+  <section className="min-h-[50vh] flex items-center justify-center py-16 px-6 relative overflow-hidden">
     <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
     <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
 
     <motion.div 
       initial={{ opacity: 0, y: 30 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="max-w-6xl mx-auto flex flex-col items-center text-center space-y-10 relative z-10"
+      className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-8 relative z-10"
     >
-      <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-[12px] font-bold uppercase tracking-[0.4em]">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        Neural Logic v1.0 Live
+      <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.4em]">
+        Neural Logic v2.0 Live
       </div>
       
-      <h1 className="text-6xl md:text-8xl font-black text-white leading-[0.95] tracking-tighter">
+      <h1 className="text-5xl md:text-7xl font-black text-white leading-[0.95] tracking-tighter">
         Master Your Debt. <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-200 to-cyan-500">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-100 to-cyan-500">
           Before It Masters You.
         </span>
       </h1>
       
-      <p className="text-xl md:text-2xl text-zinc-400 max-w-4xl mx-auto leading-relaxed font-medium tracking-wide">
-        Traditional calculators ignore the real world. Our high-fidelity engine 
-        simulates market volatility, income shocks, and opportunity costs.
-      </p>
-
-      <div className="pt-6">
+      <div className="pt-4">
         <button 
           onClick={onStart} 
-          className="px-12 py-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-full transition-all hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.2)] uppercase tracking-[0.2em] text-sm"
+          className="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-xl transition-all hover:scale-105 shadow-xl shadow-emerald-500/10 uppercase tracking-[0.2em] text-[10px]"
         >
           Begin Neural Analysis
         </button>
@@ -50,25 +40,6 @@ const Hero = ({ onStart }) => (
     </motion.div>
   </section>
 );
-
-const BentoFeatures = () => {
-  const feats = [
-    { title: "Stress Simulation", desc: "Simulate 30% income drops or 2.5% rate hikes instantly.", icon: "📉" },
-    { title: "ROI Optimization", desc: "Our algorithm finds the mathematical sweet spot.", icon: "🎯" },
-    { title: "Opportunity Cost", desc: "See the fortune you lose vs. investing in 12% SIPs.", icon: "💰" }
-  ];
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-10 pb-32">
-      {feats.map((f, i) => (
-        <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="p-10 rounded-[2.5rem] bg-zinc-900/30 border border-zinc-800/50 hover:border-emerald-500/40 transition-all group relative overflow-hidden">
-          <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
-          <h3 className="text-white font-bold text-xl mb-3 tracking-tight">{f.title}</h3>
-          <p className="text-zinc-500 leading-relaxed font-medium">{f.desc}</p>
-        </motion.div>
-      ))}
-    </div>
-  );
-};
 
 // --- MAIN APP COMPONENT ---
 function App() {
@@ -82,7 +53,7 @@ function App() {
   });
 
   const [results, setResults] = useState({ risk: null, optimize: null, opportunity: null, debtvsrent: null, shocks: null });
-  const [savedResults, setSavedResults] = useState(null); // For Comparison Mode
+  const [savedResults, setSavedResults] = useState(null); 
   const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -94,7 +65,7 @@ function App() {
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -100; // Offset for fixed navbar
+      const yOffset = -100; 
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -102,6 +73,12 @@ function App() {
 
   const runAnalysis = async () => {
     if (loading) return;
+    
+    // Move current results to baseline before fetching new data
+    if (results.risk) {
+      setSavedResults({...results});
+    }
+
     setLoading(true);
     try {
       const responses = await Promise.allSettled([
@@ -111,137 +88,159 @@ function App() {
         axios.post(`${API_BASE}/api/debt-vs-rent`, formData),
         axios.post(`${API_BASE}/api/simulate-shocks`, formData),
       ]);
+      
       const getPayload = (res) => (res.status === 'fulfilled' ? res.value.data : null);
       
       const newResults = { 
-        risk: getPayload(responses[0]), optimize: getPayload(responses[1]), 
-        opportunity: getPayload(responses[2]), debtvsrent: getPayload(responses[3]), 
+        risk: getPayload(responses[0]), 
+        optimize: getPayload(responses[1]), 
+        opportunity: getPayload(responses[2]), 
+        debtvsrent: getPayload(responses[3]), 
         shocks: getPayload(responses[4]) 
       };
 
       setResults(newResults);
-      setTimeout(() => scrollToSection('results-anchor'), 150);
-    } catch (err) { console.error(err); } finally { setLoading(false); }
+      setTimeout(() => scrollToSection('results-anchor'), 300);
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
-  const handleSaveForComparison = () => {
-    setSavedResults({...results});
+  const getDelta = (newVal, oldVal) => {
+    const diff = newVal - oldVal;
+    if (diff === 0) return { text: "No Change", color: "text-zinc-500" };
+    const isGood = diff < 0; 
+    return {
+      text: `${diff > 0 ? '+' : ''}${Math.round(diff).toLocaleString()}`,
+      color: isGood ? "text-emerald-400" : "text-rose-400"
+    };
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-[15px] text-zinc-400 flex flex-col selection:bg-emerald-500/30 font-sans relative">
+    <div className="min-h-screen bg-[#0b0f19] text-zinc-400 selection:bg-emerald-500/30 font-sans">
       
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full h-16 border-b border-zinc-800/40 flex items-center px-8 justify-between bg-[#0b0f19]/80 backdrop-blur-xl z-[60]">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center text-black font-black text-xs">P</div>
-          <span className="text-sm font-bold text-white uppercase tracking-[0.2em]">Prapti AI</span>
+      <nav className="fixed top-0 left-0 w-full h-16 border-b border-zinc-800/20 bg-[#0b0f19]/80 backdrop-blur-xl z-[100]">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-8">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 bg-emerald-500 rounded flex items-center justify-center text-black font-black text-[10px]">P</div>
+            <span className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Prapti AI</span>
+          </div>
         </div>
-        <button onClick={() => scrollToSection('app-core')} className="px-5 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-bold rounded-full transition-all uppercase tracking-widest">
-          Analyze Now
-        </button>
       </nav>
 
-      <div className="flex-1 flex pt-16">
-        <main className="flex-1 overflow-y-auto custom-scrollbar relative">
-          <Hero onStart={() => scrollToSection('app-core')} />
-          <BentoFeatures />
+      <main className="max-w-[1600px] mx-auto px-6 pt-24 pb-32">
+        
+        <Hero onStart={() => scrollToSection('app-core')} />
 
-          <div id="app-core" className="max-w-6xl mx-auto p-10 md:p-14 space-y-12 relative scroll-mt-20">
-            <header className="space-y-3 text-center">
-              <h2 className="text-4xl font-bold text-white tracking-tight">Intelligence <span className="text-emerald-500">Dashboard</span></h2>
-              <p className="text-xs text-zinc-500 uppercase font-bold tracking-[0.3em]">Deep-Dive Debt Analysis & Stress Testing</p>
-            </header>
+        <div id="app-core" className="space-y-16 scroll-mt-32">
+          
+          {/* Input Form Wrapper */}
+          <section className="max-w-4xl mx-auto bg-[#111827]/20 border border-zinc-800/40 rounded-[2.5rem] p-10 backdrop-blur-sm">
+             <InputForm 
+                formData={formData} 
+                handleInputChange={handleInputChange} 
+                calculateRisk={runAnalysis} 
+                loading={loading} 
+             />
+          </section>
 
-            <section className="bg-[#111827]/50 border border-zinc-800/60 rounded-[2.5rem] shadow-2xl p-8 md:p-12 relative overflow-hidden">
-               <InputForm 
-                  formData={formData} 
-                  handleInputChange={handleInputChange} 
-                  calculateRisk={runAnalysis} 
-                  loading={loading} 
-                  scrollToSection={scrollToSection} // Fixes the Optimize/Opportunity buttons
-                  onSave={handleSaveForComparison} // For future Comparison Button in Form
-               />
-            </section>
-
-            {/* Results with Comparison Logic */}
-            <div id="results-anchor" className="scroll-mt-20 min-h-[600px] space-y-12">
-              {savedResults && (
-                <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
-                  <span className="text-emerald-400 text-xs font-black uppercase tracking-widest">Comparison Mode Active: New Analysis vs Saved Scenario</span>
-                  <button onClick={() => setSavedResults(null)} className="text-[10px] text-zinc-500 hover:text-white underline uppercase">Reset</button>
-                </div>
-              )}
-
-              <div className={savedResults ? "grid grid-cols-1 lg:grid-cols-2 gap-8" : "w-full"}>
-                <div className="space-y-4">
-                  {savedResults && <h4 className="text-[10px] text-emerald-500 font-bold uppercase tracking-[0.2em] text-center">Current Analysis</h4>}
-                  <ResultsDashboard results={results} formData={formData} />
-                </div>
+          <div id="results-anchor" className="min-h-[400px] w-full">
+            {savedResults ? (
+              <div className="space-y-10">
                 
-                {savedResults && (
-                  <div className="space-y-4 opacity-60 grayscale-[0.3]">
-                    <h4 className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] text-center">Saved Scenario</h4>
-                    <ResultsDashboard results={savedResults} formData={formData} />
+                {/* GLOBAL DELTA HEADER */}
+                <div className="bg-emerald-500/5 border border-emerald-500/10 p-6 rounded-3xl flex justify-around items-center max-w-5xl mx-auto">
+                   <div className="text-center">
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">EMI Difference</p>
+                      <p className={`text-xl font-black ${getDelta(results.risk?.monthly_emi, savedResults.risk?.monthly_emi).color}`}>
+                        {getDelta(results.risk?.monthly_emi, savedResults.risk?.monthly_emi).text}
+                      </p>
+                   </div>
+                   <div className="w-px h-10 bg-zinc-800" />
+                   <div className="text-center">
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Risk Variance</p>
+                      <p className={`text-xl font-black ${getDelta(results.risk?.risk_score, savedResults.risk?.risk_score).color}`}>
+                        {getDelta(results.risk?.risk_score, savedResults.risk?.risk_score).text}%
+                      </p>
+                   </div>
+                   <button onClick={() => setSavedResults(null)} className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-[9px] font-black rounded-xl uppercase tracking-widest transition-all">
+                     Reset Comparison
+                   </button>
+                </div>
+
+                {/* SIDE BY SIDE GRID */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
+                  
+                  {/* LEFT: CURRENT SCENARIO */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-4">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Computation (Scenario B)</span>
+                    </div>
+                    <div className="bg-emerald-500/[0.02] border border-emerald-500/10 rounded-[3rem] p-4">
+                      <ResultsDashboard results={results} formData={formData} />
+                    </div>
                   </div>
-                )}
+
+                  {/* RIGHT: PREVIOUS SCENARIO */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-4">
+                      <div className="w-2 h-2 rounded-full bg-zinc-600" />
+                      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Baseline Scenario (Scenario A)</span>
+                    </div>
+                    <div className="bg-zinc-900/10 border border-zinc-800/40 rounded-[3rem] p-4 opacity-70 grayscale-[0.4] hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+                      <ResultsDashboard results={savedResults} formData={formData} />
+                    </div>
+                  </div>
+
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Single View when no comparison is active */
+              <div className="max-w-6xl mx-auto">
+                <ResultsDashboard results={results} formData={formData} />
+              </div>
+            )}
           </div>
-          <footer className="py-20 text-center opacity-30"><p className="text-xs uppercase tracking-[0.5em]">Mathematical Integrity Secured • 2026</p></footer>
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Floating Chatbot */}
-      <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+      <div className="fixed bottom-8 right-8 z-[200] flex flex-col items-end gap-4">
         <AnimatePresence>
           {isChatOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: 20, scale: 0.95 }} 
-              animate={{ opacity: 1, y: 0, scale: 1 }} 
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="w-96 h-[550px] bg-[#0b0f19] border border-zinc-800 shadow-2xl rounded-3xl overflow-hidden flex flex-col"
+              initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="w-[380px] h-[520px] bg-[#0b0f19] border border-zinc-800 shadow-2xl rounded-2xl overflow-hidden"
             >
-              <div className="p-5 border-b border-zinc-800 bg-zinc-900/30 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-xs font-black uppercase tracking-widest text-zinc-200">Neural Strategist</span>
-                </div>
-                <button onClick={() => setIsChatOpen(false)} className="text-zinc-500 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
+              <div className="p-4 border-b border-zinc-800 bg-zinc-900/40 flex justify-between items-center">
+                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
+                   <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                   Neural Strategist
+                </span>
+                <button onClick={() => setIsChatOpen(false)} className="text-zinc-600">✕</button>
               </div>
-              <div className="flex-1 overflow-hidden">
-                <Chatbot results={results} />
-              </div>
+              <Chatbot results={results} />
             </motion.div>
           )}
         </AnimatePresence>
-
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/20 transition-transform active:scale-95"
+          className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black rounded-2xl flex items-center justify-center shadow-lg transition-all"
         >
-          {isChatOpen ? (
-             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-          )}
+          {isChatOpen ? '✕' : '💬'}
         </button>
       </div>
 
-      {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-md z-[110] flex items-center justify-center">
-          <div className="flex flex-col items-center gap-8">
-            <div className="w-16 h-16 border-2 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin" />
-            <p className="text-sm font-black text-emerald-500 uppercase tracking-[0.4em] animate-pulse">Running Neural Scenarios</p>
+        <div className="fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-md z-[300] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+            <p className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] animate-pulse">Computing Differences...</p>
           </div>
         </div>
       )}

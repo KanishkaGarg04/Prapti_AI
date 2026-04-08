@@ -8,7 +8,6 @@ export default function InputForm({
   onSave, 
   loading 
 }) {
-  // Increased base font sizes and padding for a better "premium" feel
   const inputClass = "w-full bg-[#0b0f19] border border-zinc-800 rounded-xl px-4 py-3 text-base text-zinc-200 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-zinc-700";
   const labelClass = "block text-[11px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2 ml-1";
 
@@ -99,37 +98,40 @@ export default function InputForm({
               <option value="freelance">Freelance / Gig Economy</option>
               <option value="self_employed">Business Owner / Self-Employed</option>
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
-              ▼
-            </div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">▼</div>
           </div>
         </div>
       </div>
 
-      {/* Main Action Area */}
+      {/* Main Action Area - Dual Button Setup */}
       <div className="pt-6 space-y-6">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Combined Primary Button */}
+          
+          {/* PRIMARY: Run New Analysis */}
           <motion.button 
             whileHover={{ scale: 1.01, backgroundColor: '#10b981' }}
             whileTap={{ scale: 0.98 }}
+            onClick={calculateRisk}
+            disabled={loading}
+            className="flex-1 bg-emerald-600 text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-[0_20px_40px_rgba(16,185,129,0.15)] disabled:opacity-50 flex items-center justify-center gap-3"
+          >
+            {loading ? "Processing..." : "Run Fresh Analysis"}
+          </motion.button>
+
+          {/* SECONDARY: Comparison Mode */}
+          <motion.button 
+            whileHover={{ scale: 1.01, borderColor: '#10b981' }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => {
-              calculateRisk();
-              if(onSave) onSave(); // Triggers both actions for comparison mode
+              if (onSave) onSave(); // Saves current results to baseline
+              calculateRisk();      // Runs new computation
             }}
             disabled={loading}
-            className="flex-[3] bg-emerald-600 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all shadow-[0_20px_40px_rgba(16,185,129,0.15)] disabled:opacity-50 flex items-center justify-center gap-3"
+            className="flex-1 bg-transparent border-2 border-zinc-800 text-zinc-300 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:text-emerald-400 disabled:opacity-50 flex items-center justify-center gap-3"
           >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </span>
-            ) : "Execute Full Financial Analysis & Comparison"}
+            Compare with Stored Model
           </motion.button>
+
         </div>
 
         {/* Section Quick-Links */}
