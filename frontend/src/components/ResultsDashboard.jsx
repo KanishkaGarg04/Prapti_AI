@@ -181,7 +181,7 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
                   <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" />
                   <Tooltip content={<CustomTooltip />} />
                   <Line type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" strokeWidth={5} name="EMI Paid" />
-                  <Line type="natural" dataKey="mutual_fund_growth" stroke="#10b981" strokeWidth={6} name="Mutual Fund Growth" />
+                 <Line type="natural" dataKey="investment_value" stroke="#10b981" strokeWidth={6} name="Investment Growth" />
                 </LineChart>
               ) : (
                 <AreaChart data={results.opportunity.chart_data}>
@@ -189,7 +189,7 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
                   <XAxis dataKey="year" stroke="#64748b" />
                   <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="natural" dataKey="mutual_fund_growth" stroke="#10b981" fill="#10b981" fillOpacity={0.25} name="Mutual Fund Growth" />
+                 <Area type="natural" dataKey="investment_value" stroke="#10b981" fill="#10b981" fillOpacity={0.25} name="Investment Growth" />
                   <Area type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.15} name="EMI Paid" />
                 </AreaChart>
               )}
