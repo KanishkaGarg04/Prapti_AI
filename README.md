@@ -91,8 +91,6 @@ Prapti AI introduces a **Neural Financial Engine** that simulates multiple repay
 
 ---
 
-## 🧠 System Architecture
-
 ### 🔹 Frontend
 
 * **React (Vite)** — Fast UI rendering
@@ -145,8 +143,9 @@ cd Prapti-AI
 
 ```bash
 cd backend
-npm install
-npm start
+.\venv\Scripts\Activate
+pip install -r requirements.txt
+python -m uvicorn main:app --reload
 ```
 
 Backend will run on:
