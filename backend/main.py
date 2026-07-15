@@ -246,5 +246,5 @@ Answer:
 
         # --- Smart fallback (important for demo stability) ---
         return {
-            "reply": f"Your EMI of ₹{risk_outer.get('emi_monthly', 'N/A')} is putting pressure on your finances. Reducing tenure or restructuring the loan can improve stability."
+            "reply": f"Your EMI of ₹{risk_outer.get('emi_monthly', 'N/A')} is putting pressure in your finances. Reducing tenure or restructuring the loan can improve stability."
         }
