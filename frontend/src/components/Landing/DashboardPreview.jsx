@@ -1,96 +1,220 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
+import {
+  TrendingUp,
+  Wallet,
+  PiggyBank,
+  ShieldCheck,
+  BrainCircuit,
+  ArrowUpRight,
+} from "lucide-react";
 
-export const Hero = ({ onStart }) => (
-  <section className="min-h-[85vh] flex items-center justify-center py-24 px-6 relative overflow-hidden">
-    {/* Background Decorative Blurs - These fill the "empty" void in your screenshot */}
-    <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
-    <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
-
-    <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="max-w-6xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10"
-    >
-      {/* Badge with extreme letter spacing */}
-      <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 text-emerald-400 text-[11px] font-black uppercase tracking-[0.4em]">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        Neural Logic v1.0 Live
-      </div>
-      
-      {/* Title with tracking-tighter for a modern premium feel */}
-      <h1 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter">
-        Master Your Debt. <br/>
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-200 to-cyan-500">
-          Before It Masters You.
-        </span>
-      </h1>
-      
-      {/* Increased line-height (leading-relaxed) and wider max-width to eat up space */}
-      <p className="text-xl md:text-2xl text-zinc-400 max-w-4xl mx-auto leading-relaxed font-medium tracking-wide">
-        Traditional calculators ignore real-world volatility. Our high-fidelity engine 
-        simulates market shocks and opportunity costs to build your path to absolute financial freedom.
-      </p>
-
-      <div className="flex flex-col items-center gap-10 pt-4">
-        <button 
-          onClick={onStart}
-          className="px-12 py-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-full transition-all hover:scale-105 shadow-[0_0_50px_rgba(16,185,129,0.25)] uppercase tracking-[0.2em] text-sm"
-        >
-          Begin Neural Analysis
-        </button>
-
-        {/* New "Trust/Metric" Row - Fills the empty space below the button */}
-        <div className="flex items-center gap-12 opacity-30 pt-12">
-           <div className="text-center">
-              <div className="text-white font-bold text-xl tracking-tighter">256-bit</div>
-              <div className="text-[10px] uppercase tracking-[0.3em] font-bold">Secure</div>
-           </div>
-           <div className="h-10 w-[1px] bg-zinc-800" />
-           <div className="text-center">
-              <div className="text-white font-bold text-xl tracking-tighter">FastAPI</div>
-              <div className="text-[10px] uppercase tracking-[0.3em] font-bold">Logic</div>
-           </div>
-           <div className="h-10 w-[1px] bg-zinc-800" />
-           <div className="text-center">
-              <div className="text-white font-bold text-xl tracking-tighter">Real-time</div>
-              <div className="text-[10px] uppercase tracking-[0.3em] font-bold">Simulation</div>
-           </div>
-        </div>
-      </div>
-    </motion.div>
-  </section>
-);
-
-export const Features = () => {
-  const feats = [
-    { title: "Stress Simulation", desc: "Simulate 30% income drops or 2% rate hikes instantly to test your survival.", icon: "📉" },
-    { title: "Interest Optimization", desc: "Our neural logic finds the mathematical 'Sweet Spot' for your EMI.", icon: "🎯" },
-    { title: "Opportunity Cost", desc: "Compare your debt interest against 12% SIP returns in real-time.", icon: "💰" }
-  ];
-
+export default function DashboardPreview() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto px-10 pb-32">
-      {feats.map((f, i) => (
-        <motion.div 
-          key={i} 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
+    <section className="relative py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+
+      {/* Background Glow */}
+
+      <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-blue-500/20 blur-[140px]" />
+
+      <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-[150px]" />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="p-10 rounded-[2.5rem] bg-zinc-900/30 border border-zinc-800/50 hover:border-emerald-500/30 transition-all group relative overflow-hidden"
+          className="text-center"
         >
-          {/* Subtle hover glow for each card */}
-          <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          
-          <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 inline-block">{f.icon}</div>
-          <h3 className="text-white font-bold text-xl mb-3 tracking-tight">{f.title}</h3>
-          <p className="text-zinc-500 leading-relaxed font-medium">{f.desc}</p>
+          <p className="uppercase tracking-[0.3em] text-blue-400 font-semibold">
+            Live Analytics
+          </p>
+
+          <h2 className="mt-5 text-5xl font-black text-white">
+            AI Financial Dashboard
+          </h2>
+
+          <p className="mt-6 text-slate-300 text-lg max-w-3xl mx-auto">
+            Every important financial metric, recommendation, and risk
+            indicator—beautifully visualized in one intelligent dashboard.
+          </p>
         </motion.div>
-      ))}
-    </div>
+
+        {/* Dashboard */}
+
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: .7 }}
+          viewport={{ once: true }}
+          className="mt-20 rounded-[35px] border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-2xl"
+        >
+
+          {/* TOP ROW */}
+
+          <div className="grid lg:grid-cols-4 gap-6">
+
+            <MetricCard
+              icon={<Wallet />}
+              title="Monthly EMI"
+              value="₹18,420"
+              color="blue"
+            />
+
+            <MetricCard
+              icon={<ShieldCheck />}
+              title="Risk Score"
+              value="82"
+              color="green"
+            />
+
+            <MetricCard
+              icon={<PiggyBank />}
+              title="Savings"
+              value="₹26K"
+              color="emerald"
+            />
+
+            <MetricCard
+              icon={<TrendingUp />}
+              title="Interest Saved"
+              value="₹5.8L"
+              color="orange"
+            />
+
+          </div>
+
+          {/* Middle */}
+
+          <div className="grid lg:grid-cols-3 gap-8 mt-10">
+
+            {/* Chart */}
+
+            <div className="lg:col-span-2 rounded-3xl bg-slate-800 p-8">
+
+              <div className="flex justify-between">
+
+                <div>
+
+                  <h3 className="text-white text-xl font-bold">
+                    Wealth Growth
+                  </h3>
+
+                  <p className="text-slate-400">
+                    Next 12 Months
+                  </p>
+
+                </div>
+
+                <ArrowUpRight className="text-green-400" />
+              </div>
+
+              {/* Fake Animated Chart */}
+
+              <div className="mt-10 flex items-end gap-4 h-60">
+
+                {[25,45,40,65,55,72,85,80,92,100].map((height,index)=>(
+                  <motion.div
+                    key={index}
+                    initial={{height:0}}
+                    whileInView={{height:`${height}%`}}
+                    transition={{
+                      delay:index*.08
+                    }}
+                    className="flex-1 rounded-full bg-gradient-to-t from-blue-500 to-cyan-400"
+                  />
+                ))}
+
+              </div>
+
+            </div>
+
+            {/* AI */}
+
+            <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8">
+
+              <div className="flex items-center gap-3">
+
+                <BrainCircuit
+                  className="text-white"
+                  size={30}
+                />
+
+                <h3 className="text-white text-xl font-bold">
+                  AI Coach
+                </h3>
+
+              </div>
+
+              <div className="mt-8">
+
+                <div className="rounded-2xl bg-white/10 p-5">
+
+                  <p className="text-white font-semibold">
+                    Recommendation
+                  </p>
+
+                  <p className="mt-3 text-blue-100 leading-7">
+
+                    Increase your SIP by ₹5,000/month.
+
+                    You can save approximately ₹18.4 Lakhs over
+                    the next decade while maintaining a safe debt ratio.
+
+                  </p>
+
+                </div>
+
+                <button className="mt-8 w-full rounded-xl bg-white py-4 font-semibold text-blue-700 hover:scale-[1.02] transition">
+
+                  Talk to AI
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </motion.div>
+
+      </div>
+
+    </section>
   );
-};
+}
+
+function MetricCard({icon,title,value}){
+
+return(
+
+<div className="rounded-2xl bg-slate-800 p-6 border border-slate-700">
+
+<div className="flex justify-between">
+
+<div className="text-blue-400">
+
+{icon}
+
+</div>
+
+<p className="text-slate-400">
+
+{title}
+
+</p>
+
+</div>
+
+<h2 className="mt-8 text-4xl font-black text-white">
+
+{value}
+
+</h2>
+
+</div>
+
+)
+
+}
