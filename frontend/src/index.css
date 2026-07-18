@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
+* {
+    font-family: "Inter", sans-serif;
 }
-/*this portion left*/
+
+body{
+    background:#F7F8FA;
+    color:#111827;
+}

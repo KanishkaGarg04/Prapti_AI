@@ -1,107 +1,66 @@
-import { Menu, X, Landmark } from "lucide-react";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { Landmark } from "lucide-react";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-
-  const navItems = [
-    "Features",
-    "Dashboard",
-    "AI Coach",
-    "About",
-  ];
-
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
-      <nav className="mx-auto max-w-7xl px-6 py-4">
-        <div className="flex items-center justify-between rounded-2xl border border-white/20 bg-white/80 backdrop-blur-xl shadow-lg px-6 py-4">
+    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
-          {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -25 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
-          >
-            <div className="p-2 rounded-xl bg-blue-600 text-white">
-              <Landmark size={22} />
-            </div>
+        {/* Logo */}
 
-            <div>
-              <h1 className="font-bold text-xl text-slate-900">
-                Prapti AI
-              </h1>
+        <div className="flex items-center gap-3">
 
-              <p className="text-xs text-slate-500">
-                Financial Intelligence
-              </p>
-            </div>
-          </motion.div>
+          <div className="flex h-9 w-9 items-center justify-center border border-gray-300 rounded-md">
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(" ", "")}`}
-                className="text-slate-700 hover:text-blue-600 transition font-medium"
-              >
-                {item}
-              </a>
-            ))}
-          </div>
-
-          {/* Buttons */}
-          <div className="hidden md:flex gap-3">
-
-            <button className="px-5 py-2 rounded-xl font-medium border border-slate-300 hover:bg-slate-100 transition">
-              Login
-            </button>
-
-            <button className="px-5 py-2 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
-              Get Started
-            </button>
+            <Landmark
+              size={18}
+              className="text-gray-700"
+            />
 
           </div>
 
-          {/* Mobile Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <X /> : <Menu />}
-          </button>
+          <div>
+
+            <h1 className="text-[15px] font-semibold tracking-tight text-gray-900">
+              Prapti AI
+            </h1>
+
+            <p className="text-[11px] text-gray-500">
+              Financial Intelligence Platform
+            </p>
+
+          </div>
+
         </div>
 
-        {/* Mobile Menu */}
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden mt-3 rounded-2xl bg-white shadow-lg border border-slate-200 p-5"
-          >
-            <div className="flex flex-col gap-4">
-              {navItems.map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(" ", "")}`}
-                  className="text-slate-700"
-                >
-                  {item}
-                </a>
-              ))}
+        {/* Navigation */}
 
-              <button className="rounded-xl border py-2">
-                Login
-              </button>
+        <nav className="hidden gap-10 text-[14px] font-medium text-gray-600 md:flex">
 
-              <button className="rounded-xl bg-blue-600 text-white py-2">
-                Get Started
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </nav>
+          <a href="#" className="hover:text-gray-900 transition">
+            Dashboard
+          </a>
+
+          <a href="#" className="hover:text-gray-900 transition">
+            Analysis
+          </a>
+
+          <a href="#" className="hover:text-gray-900 transition">
+            Reports
+          </a>
+
+          <a href="#" className="hover:text-gray-900 transition">
+            Documentation
+          </a>
+
+        </nav>
+
+        {/* Button */}
+
+        <button className="rounded-md border border-gray-300 px-4 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition">
+          Sign In
+        </button>
+
+      </div>
     </header>
   );
 }
