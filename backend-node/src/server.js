@@ -1,24 +1,33 @@
+import express from "express";
 import dotenv from "dotenv";
-import app from "./app.js";
-import connectDB from "./config/db.js";
+import cors from "cors";
+import morgan from "morgan";
+
+import { connectDB } from "./config/db.js";
+import analysisRoutes from "./routes/analysisRoutes.js";
 
 dotenv.config();
-console.log(process.env.MONGO_URI);
-const PORT = process.env.PORT || 8000;
 
-const startServer = async () => {
-  try {
-    await connectDB();
+const app = express();
 
-    app.listen(PORT, () => {
-      console.log(
-        `🚀 Server running on http://localhost:${PORT}`
-      );
-    });
+connectDB();
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+app.use(cors());
 
-startServer();
+app.use(express.json());
+
+app.use(morgan("dev"));
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Prapti AI Backend Running 🚀",
+  });
+});
+
+app.use("/api/analysis", analysisRoutes);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server Running on Port ${PORT}`);
+});
