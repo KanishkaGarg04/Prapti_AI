@@ -1,29 +1,46 @@
 import mongoose from "mongoose";
 
+const projectionSchema = new mongoose.Schema({
+  year: String,
+  amount: Number,
+});
+
+const recommendationSchema = new mongoose.Schema(
+  {
+    type: String,
+    title: String,
+    description: String,
+    priority: String,
+  },
+  { _id: false }
+);
+
 const analysisSchema = new mongoose.Schema(
   {
     loanAmount: Number,
     interestRate: Number,
     tenure: Number,
+
     monthlyIncome: Number,
     monthlyExpenses: Number,
     existingEmi: Number,
+
     investment: String,
     goal: String,
 
-    riskScore: Number,
-    debtRatio: Number,
-    interestSaved: Number,
     emi: Number,
+    totalInterest: Number,
+    totalPayment: Number,
 
-    recommendation: String,
+    debtRatio: Number,
+    savingsRate: Number,
+    monthlySurplus: Number,
 
-    projection: [
-      {
-        year: String,
-        amount: Number,
-      },
-    ],
+    emergencyFund: Number,
+
+    healthScore: Number,
+
+    projection: [projectionSchema],
 
     cashflow: [
       {
@@ -38,6 +55,29 @@ const analysisSchema = new mongoose.Schema(
         value: Number,
       },
     ],
+
+    optimizedLoan: {
+      optimizedEmi: Number,
+      optimizedYears: Number,
+      optimizedInterest: Number,
+      interestSaved: Number,
+    },
+
+    investmentPlan: {
+      stocks: Number,
+      mutualFunds: Number,
+      debtFunds: Number,
+      fd: Number,
+      gold: Number,
+      cash: Number,
+    },
+
+    recommendations: {
+  type: [recommendationSchema],
+  default: [],
+},
+
+    recommendation: String,
   },
   {
     timestamps: true,

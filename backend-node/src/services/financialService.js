@@ -1,80 +1,182 @@
 import { generateProjection } from "../utils/projection.js";
 
+import {
+  calculateEMI,
+  calculateDebtRatio,
+  calculateSavingsRate,
+  calculateEmergencyFund,
+  calculateHealthScore,
+  calculateLoanOptimization,
+  investmentAllocation,
+} from "./calculators.js";
+
+import { generateRecommendations } from "./reccomendationEngine.js";
+
 export function calculateFinance(data) {
-  const loanAmount = Number(data.loanAmount);
-  const interestRate = Number(data.interestRate);
-  const tenure = Number(data.tenure);
-  const monthlyIncome = Number(data.monthlyIncome);
-  const monthlyExpenses = Number(data.monthlyExpenses);
-  const existingEmi = Number(data.existingEmi);
+  // Convert safely
+  const loanAmount = Number(data.loanAmount) || 0;
+  const interestRate = Number(data.interestRate) || 0;
+  const tenure = Number(data.tenure) || 0;
+  const income = Number(data.monthlyIncome) || 0;
+  const expenses = Number(data.monthlyExpenses) || 0;
+  const existingEmi = Number(data.existingEmi) || 0;
 
-  const monthlyRate = interestRate / 12 / 100;
-  const months = tenure * 12;
-
-  const emi =
-    (loanAmount *
-      monthlyRate *
-      Math.pow(1 + monthlyRate, months)) /
-    (Math.pow(1 + monthlyRate, months) - 1);
-
-  const totalPayment = emi * months;
-  const totalInterest = totalPayment - loanAmount;
-
-  // Total monthly debt burden
-  const totalMonthlyDebt = emi + existingEmi;
-
-  const debtRatio = (totalMonthlyDebt / monthlyIncome) * 100;
-
-  let riskScore;
-
-  if (debtRatio >= 60) {
-    riskScore = 90;
-  } else if (debtRatio >= 45) {
-    riskScore = 70;
-  } else if (debtRatio >= 35) {
-    riskScore = 50;
-  } else {
-    riskScore = 25;
+  // Validation
+  if (
+    loanAmount <= 0 ||
+    interestRate <= 0 ||
+    tenure <= 0 ||
+    income <= 0
+  ) {
+    throw new Error("Invalid financial inputs.");
   }
 
-  const interestSaved = totalInterest * 0.18;
+  // EMI
+  const emi = calculateEMI(
+    loanAmount,
+    interestRate,
+    tenure
+  );
+  console.log("EMI =", emi);
 
-  const projection = generateProjection(
-    Math.max(5000, monthlyIncome * 0.15)
+  const totalPayment = emi * tenure * 12;
+  const totalInterest = totalPayment - loanAmount;
+console.log({
+  totalPayment,
+  totalInterest
+});
+
+  const debtRatio = calculateDebtRatio(
+    emi + existingEmi,
+    income
   );
 
+  const savings = calculateSavingsRate(
+    income,
+    expenses,
+    emi + existingEmi
+  );
+
+  const emergencyFund =
+    calculateEmergencyFund(expenses);
+
+  const healthScore = calculateHealthScore({
+    debtRatio,
+    savingsRate: savings.savingsRate,
+  });
+
+  const optimizedLoan =
+    calculateLoanOptimization(
+      emi,
+      totalInterest
+    );
+
+  const investmentPlan =
+    investmentAllocation(data.investment);
+
+  const projection = generateProjection(
+    Math.max(
+      5000,
+      savings.monthlySurplus * 0.6
+    )
+  );
+
+  const recommendations =
+    generateRecommendations({
+      debtRatio,
+      savingsRate: savings.savingsRate,
+      monthlySurplus: savings.monthlySurplus,
+      healthScore,
+    });
+
+  console.log("===== FINANCIAL RESULT =====");
+  console.log({
+    loanAmount,
+    interestRate,
+    tenure,
+    income,
+    expenses,
+    existingEmi,
+    emi,
+    totalPayment,
+    totalInterest,
+    debtRatio,
+    savings,
+    emergencyFund,
+    healthScore,
+    optimizedLoan,
+    investmentPlan,
+    projection,
+    recommendations,
+  });
+
   return {
-    emi: Math.round(emi),
+    emi: Number(emi),
 
-    totalInterest: Math.round(totalInterest),
+    totalInterest: Number(totalInterest),
 
-    totalPayment: Math.round(totalPayment),
+    totalPayment: Number(totalPayment),
 
-    debtRatio: Math.round(debtRatio),
+    debtRatio: Number(debtRatio),
 
-    riskScore,
+    savingsRate: Number(savings.savingsRate),
 
-    interestSaved: Math.round(interestSaved),
+    monthlySurplus: Number(
+      savings.monthlySurplus
+    ),
 
-    recommendation:
-      debtRatio > 50
-        ? "Your debt burden is relatively high. Consider increasing your EMI or reducing discretionary expenses."
-        : "Your financial profile is healthy. Continue investing consistently while maintaining your current repayment strategy.",
+    emergencyFund: Number(
+      emergencyFund
+    ),
+
+    healthScore: Number(
+      healthScore
+    ),
+
+    optimizedLoan: {
+      optimizedEmi: Number(
+        optimizedLoan.optimizedEmi
+      ),
+
+      optimizedYears: Number(
+        optimizedLoan.optimizedYears
+      ),
+
+      optimizedInterest: Number(
+        optimizedLoan.optimizedInterest
+      ),
+
+      interestSaved: Number(
+        optimizedLoan.interestSaved
+      ),
+    },
+
+    investmentPlan,
 
     projection,
+
+    recommendations,
+
+    recommendation:
+      recommendations
+        .map(
+          (r) =>
+            `• ${r.title}\n${r.description}`
+        )
+        .join("\n\n"),
 
     cashflow: [
       {
         month: "Income",
-        value: monthlyIncome,
+        value: Number(income),
       },
       {
         month: "Expenses",
-        value: monthlyExpenses,
+        value: Number(expenses),
       },
       {
         month: "EMI",
-        value: Math.round(emi),
+        value: Number(emi),
       },
     ],
 
