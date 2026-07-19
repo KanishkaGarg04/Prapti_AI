@@ -1,66 +1,151 @@
 import { Landmark } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function Navbar() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
-        {/* Logo */}
+export default function Navbar(){
+const navigate = useNavigate();
+    return(
 
-        <div className="flex items-center gap-3">
+<header className="
 
-          <div className="flex h-9 w-9 items-center justify-center border border-gray-300 rounded-md">
+sticky
 
-            <Landmark
-              size={18}
-              className="text-gray-700"
-            />
+top-0
 
-          </div>
+z-50
 
-          <div>
+bg-white/90
 
-            <h1 className="text-[15px] font-semibold tracking-tight text-gray-900">
-              Prapti AI
-            </h1>
+backdrop-blur-md
 
-            <p className="text-[11px] text-gray-500">
-              Financial Intelligence Platform
-            </p>
+border-b
 
-          </div>
+border-gray-200
 
-        </div>
+">
 
-        {/* Navigation */}
+<div className="
 
-        <nav className="hidden gap-10 text-[14px] font-medium text-gray-600 md:flex">
+mx-auto
 
-          <a href="#" className="hover:text-gray-900 transition">
-            Dashboard
-          </a>
+max-w-7xl
 
-          <a href="#" className="hover:text-gray-900 transition">
-            Analysis
-          </a>
+h-16
 
-          <a href="#" className="hover:text-gray-900 transition">
-            Reports
-          </a>
+px-6
 
-          <a href="#" className="hover:text-gray-900 transition">
-            Documentation
-          </a>
+flex
 
-        </nav>
+items-center
 
-        {/* Button */}
+justify-between
 
-        <button className="rounded-md border border-gray-300 px-4 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition">
-          Sign In
-        </button>
+">
 
-      </div>
-    </header>
-  );
+<div className="flex items-center gap-3">
+
+<Landmark
+
+size={20}
+
+className="text-blue-600"
+
+/>
+
+<div>
+
+<h1 className="text-sm font-semibold">
+
+Prapti AI
+
+</h1>
+
+<p className="text-[11px] text-gray-500">
+
+Financial Intelligence Platform
+
+</p>
+
+</div>
+
+</div>
+
+<nav className="flex items-center gap-8">
+
+<a
+
+href="#"
+
+className="text-sm text-gray-600 hover:text-blue-600"
+
+>
+
+Home
+
+</a>
+
+<a
+
+href="#"
+
+className="text-sm text-gray-600 hover:text-blue-600"
+
+>
+
+<button
+onClick={()=>navigate("/dashboard")}
+>
+
+Dashboard
+
+</button>
+
+</a>
+
+<a
+
+href="#"
+
+className="text-sm text-gray-600 hover:text-blue-600"
+
+>
+
+Documentation
+
+</a>
+
+<button
+
+className="
+
+border
+
+border-gray-300
+
+px-4
+
+py-2
+
+text-sm
+
+hover:border-blue-600
+
+hover:text-blue-600
+
+"
+
+>
+
+Launch
+
+</button>
+
+</nav>
+
+</div>
+
+</header>
+
+)
+
 }

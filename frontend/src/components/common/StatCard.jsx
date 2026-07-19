@@ -7,7 +7,17 @@ export default function StatCard({
   positive = true,
 }) {
   return (
-    <div className="border border-gray-200 bg-white p-5 transition hover:border-gray-400">
+    <div className="
+      bg-white
+      border
+      border-gray-200
+      shadow-sm
+      transition-all
+      duration-300
+      hover:border-blue-300
+      hover:shadow-lg
+      hover:-translate-y-1
+      ">
 
       <div className="flex items-center justify-between">
 

@@ -1,220 +1,88 @@
-import { motion } from "framer-motion";
 import {
   TrendingUp,
+  ShieldCheck,
   Wallet,
   PiggyBank,
-  ShieldCheck,
-  BrainCircuit,
-  ArrowUpRight,
 } from "lucide-react";
+
+const cards = [
+  {
+    title: "Monthly EMI",
+    value: analysis
+    ? `₹${analysis.emi.toLocaleString("en-IN")}`
+    : "--",
+    icon: Wallet,
+  },
+  {
+    title: "Risk Score",
+    value: analysis ? `${analysis.riskScore}/100` : "--",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Investment Value",
+    value: "₹32.4L",
+    icon: TrendingUp,
+  },
+  {
+    title: "Interest Saved",
+    value: "₹4.8L",
+    icon: PiggyBank,
+  },
+];
 
 export default function DashboardPreview() {
   return (
-    <section className="relative py-28 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+    <section className="border-t border-gray-200 bg-gray-50">
 
-      {/* Background Glow */}
+      <div className="mx-auto max-w-7xl px-6 py-20">
 
-      <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-blue-500/20 blur-[140px]" />
+        <div className="mb-10">
 
-      <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-[150px]" />
-
-      <div className="relative max-w-7xl mx-auto px-6">
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <p className="uppercase tracking-[0.3em] text-blue-400 font-semibold">
-            Live Analytics
+          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+            Dashboard Preview
           </p>
 
-          <h2 className="mt-5 text-5xl font-black text-white">
-            AI Financial Dashboard
+          <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+            Financial Summary
           </h2>
 
-          <p className="mt-6 text-slate-300 text-lg max-w-3xl mx-auto">
-            Every important financial metric, recommendation, and risk
-            indicator—beautifully visualized in one intelligent dashboard.
-          </p>
-        </motion.div>
+        </div>
 
-        {/* Dashboard */}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
 
-        <motion.div
-          initial={{ opacity: 0, y: 80 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: .7 }}
-          viewport={{ once: true }}
-          className="mt-20 rounded-[35px] border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-2xl"
-        >
+          {cards.map((card) => {
 
-          {/* TOP ROW */}
+            const Icon = card.icon;
 
-          <div className="grid lg:grid-cols-4 gap-6">
+            return (
 
-            <MetricCard
-              icon={<Wallet />}
-              title="Monthly EMI"
-              value="₹18,420"
-              color="blue"
-            />
+              <div
+                key={card.title}
+                className="border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+              >
 
-            <MetricCard
-              icon={<ShieldCheck />}
-              title="Risk Score"
-              value="82"
-              color="green"
-            />
+                <div className="mb-8 flex items-center justify-between">
 
-            <MetricCard
-              icon={<PiggyBank />}
-              title="Savings"
-              value="₹26K"
-              color="emerald"
-            />
-
-            <MetricCard
-              icon={<TrendingUp />}
-              title="Interest Saved"
-              value="₹5.8L"
-              color="orange"
-            />
-
-          </div>
-
-          {/* Middle */}
-
-          <div className="grid lg:grid-cols-3 gap-8 mt-10">
-
-            {/* Chart */}
-
-            <div className="lg:col-span-2 rounded-3xl bg-slate-800 p-8">
-
-              <div className="flex justify-between">
-
-                <div>
-
-                  <h3 className="text-white text-xl font-bold">
-                    Wealth Growth
-                  </h3>
-
-                  <p className="text-slate-400">
-                    Next 12 Months
+                  <p className="text-xs uppercase tracking-widest text-gray-500">
+                    {card.title}
                   </p>
+
+                  <Icon size={18} className="text-gray-700" />
 
                 </div>
 
-                <ArrowUpRight className="text-green-400" />
-              </div>
-
-              {/* Fake Animated Chart */}
-
-              <div className="mt-10 flex items-end gap-4 h-60">
-
-                {[25,45,40,65,55,72,85,80,92,100].map((height,index)=>(
-                  <motion.div
-                    key={index}
-                    initial={{height:0}}
-                    whileInView={{height:`${height}%`}}
-                    transition={{
-                      delay:index*.08
-                    }}
-                    className="flex-1 rounded-full bg-gradient-to-t from-blue-500 to-cyan-400"
-                  />
-                ))}
-
-              </div>
-
-            </div>
-
-            {/* AI */}
-
-            <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8">
-
-              <div className="flex items-center gap-3">
-
-                <BrainCircuit
-                  className="text-white"
-                  size={30}
-                />
-
-                <h3 className="text-white text-xl font-bold">
-                  AI Coach
+                <h3 className="text-3xl font-semibold text-gray-900">
+                  {card.value}
                 </h3>
 
               </div>
 
-              <div className="mt-8">
-
-                <div className="rounded-2xl bg-white/10 p-5">
-
-                  <p className="text-white font-semibold">
-                    Recommendation
-                  </p>
-
-                  <p className="mt-3 text-blue-100 leading-7">
-
-                    Increase your SIP by ₹5,000/month.
-
-                    You can save approximately ₹18.4 Lakhs over
-                    the next decade while maintaining a safe debt ratio.
-
-                  </p>
-
-                </div>
-
-                <button className="mt-8 w-full rounded-xl bg-white py-4 font-semibold text-blue-700 hover:scale-[1.02] transition">
-
-                  Talk to AI
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </motion.div>
+            );
+          })}
+        </div>
 
       </div>
 
     </section>
   );
-}
-
-function MetricCard({icon,title,value}){
-
-return(
-
-<div className="rounded-2xl bg-slate-800 p-6 border border-slate-700">
-
-<div className="flex justify-between">
-
-<div className="text-blue-400">
-
-{icon}
-
-</div>
-
-<p className="text-slate-400">
-
-{title}
-
-</p>
-
-</div>
-
-<h2 className="mt-8 text-4xl font-black text-white">
-
-{value}
-
-</h2>
-
-</div>
-
-)
-
 }
