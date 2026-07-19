@@ -42,7 +42,7 @@ export default function DashboardPreview() {
             Dashboard Preview
           </p>
 
-          <h2 className="mt-3 text-3xl font-semibold text-gray-900">
+          <h2 className="mt-4 text-5xl font-bold tracking-tight font-semibold text-gray-900">
             Financial Summary
           </h2>
 

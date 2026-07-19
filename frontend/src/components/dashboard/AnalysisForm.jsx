@@ -34,7 +34,7 @@ export default function AnalysisForm() {
 
   try {
     setLoading(true);
-
+    console.log(formData);
     const res = await api.post("/analysis", formData);
 
     setAnalysis(res.data);
@@ -208,9 +208,26 @@ function Input({
   disabled
 }) {
   <input
-    disabled={disabled}
+  disabled={disabled}
+  name={name}
+  value={value}
+  placeholder={placeholder}
+  onChange={onChange}
+  className="
+    mt-2
+    w-full
+    border
+    border-gray-300
+    bg-white
+    px-4
+    py-3
+    outline-none
+    transition
+    focus:border-blue-600
     disabled:bg-gray-100
-disabled:cursor-not-allowed/>
+    disabled:cursor-not-allowed
+  "
+/>
   
   return (
     <div>

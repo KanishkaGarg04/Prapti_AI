@@ -8,7 +8,10 @@ import AnalysisForm from "./AnalysisForm";
 import SummaryPanel from "./SummaryPanel";
 import ChartsSection from "./ChartsSection";
 import RecentAnalysis from "./RecentAnalysis";
-
+import HealthScoreCard from "./cards/HealthScoreCard";
+import DebtRatioCard from "./cards/DebtRatioCard";
+import SavingsCard from "./cards/SavingsCard";
+import EmergencyFundCard from "./cards/EmergencyFundCard";
 
 export default function Dashboard() {
   const { setHistory } = useAnalysis();
@@ -60,16 +63,20 @@ useEffect(() => {
 
             {/* Analysis + Summary */}
 
-            <div className="grid gap-8 xl:grid-cols-3">
+              <div className="grid gap-8 xl:grid-cols-3">
 
               <div className="xl:col-span-2">
                 <AnalysisForm />
               </div>
 
-              <SummaryPanel />
+              <div className="space-y-6">
+                <HealthScoreCard />
+                <SavingsCard />
+                <DebtRatioCard />
+                <EmergencyFundCard />
+              </div>
 
             </div>
-
             {/* Charts */}
 
             <div
