@@ -1,9 +1,101 @@
-export async function getRecommendation(result) {
-  if (result.debtRatio > 50)
-    return "Your debt-to-income ratio is high. Consider increasing your monthly repayment or refinancing your loan to reduce long-term interest costs.";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-  if (result.debtRatio > 35)
-    return "Your financial profile is stable, but increasing your EMI slightly could reduce the overall interest paid and shorten the loan tenure.";
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-  return "Your financial health appears strong. Continue investing consistently while maintaining an emergency fund to maximize long-term financial stability.";
+const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+});
+
+export async function getRecommendation(finance) {
+  try {
+    const prompt = `
+You are a Senior Financial Advisor.
+
+Analyze the following financial profile and return ONLY valid JSON.
+
+Financial Data:
+
+Loan Amount: ₹${finance.loanAmount}
+Interest Rate: ${finance.interestRate}%
+Loan Tenure: ${finance.tenure} years
+
+Monthly Income: ₹${finance.monthlyIncome}
+Monthly Expenses: ₹${finance.monthlyExpenses}
+
+Monthly EMI: ₹${finance.emi}
+
+Debt Ratio: ${finance.debtRatio}%
+
+Savings Rate: ${finance.savingsRate}%
+
+Emergency Fund: ₹${finance.emergencyFund}
+
+Health Score: ${finance.healthScore}/100
+
+Investment Goal:
+${finance.goal}
+
+Risk Preference:
+${finance.investment}
+
+Return ONLY JSON.
+
+{
+  "summary":"",
+
+  "strengths":[
+    "",
+    "",
+    ""
+  ],
+
+  "risks":[
+    "",
+    "",
+    ""
+  ],
+
+  "actions":[
+    "",
+    "",
+    ""
+  ],
+
+  "investmentAdvice":"",
+
+  "loanAdvice":""
+}
+`;
+
+    const result = await model.generateContent(prompt);
+
+    const response =
+      result.response.text();
+
+    const cleaned = response
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.error("Gemini Error");
+
+    console.error(err);
+
+    return {
+      summary:
+        "AI recommendation unavailable.",
+
+      strengths: [],
+
+      risks: [],
+
+      actions: [],
+
+      investmentAdvice: "",
+
+      loanAdvice: "",
+    };
+  }
 }

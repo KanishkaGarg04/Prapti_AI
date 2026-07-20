@@ -101,7 +101,19 @@ market: {
 
   updatedAt: Date,
 },
+  aiRecommendation: {
+  summary: String,
 
+  strengths: [String],
+
+  risks: [String],
+
+  actions: [String],
+
+  investmentAdvice: String,
+
+  loanAdvice: String,
+},
     recommendation: String,
   },
   {

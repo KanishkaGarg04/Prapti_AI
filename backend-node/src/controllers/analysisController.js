@@ -7,15 +7,39 @@ export const analyzeFinance = async (req, res) => {
     console.log("Incoming Request:");
     console.log(req.body);
 
+    // Financial calculations
     const finance = await calculateFinance(req.body);
 
-    console.log("Finance:");
-    console.log(finance);
+    // AI Recommendation
+    let aiRecommendation = null;
 
+    try {
+      aiRecommendation = await getRecommendation({
+        ...finance,
+        ...req.body,
+      });
+    } catch (err) {
+      console.log("Gemini Error:");
+      console.log(err.message);
+    }
+
+    // Save to MongoDB
     const analysis = await Analysis.create({
       ...req.body,
+
       ...finance,
+
+      aiRecommendation,
+
+      recommendation:
+        aiRecommendation?.summary ||
+        finance.recommendation,
+
+      recommendations:
+        finance.recommendations || [],
     });
+
+    console.log("Analysis Saved Successfully");
 
     return res.status(201).json(analysis);
 
@@ -23,7 +47,6 @@ export const analyzeFinance = async (req, res) => {
 
     console.error("========== ERROR ==========");
     console.error(err);
-    console.error(err.stack);
 
     return res.status(500).json({
       message: err.message,
@@ -33,32 +56,43 @@ export const analyzeFinance = async (req, res) => {
 
 export const getHistory = async (req, res) => {
   try {
+
     const history = await Analysis.find().sort({
       createdAt: -1,
     });
 
     return res.json(history);
+
   } catch (err) {
+
     return res.status(500).json({
       message: err.message,
     });
+
   }
 };
 
 export const getAnalysis = async (req, res) => {
+
   try {
+
     const analysis = await Analysis.findById(req.params.id);
 
     if (!analysis) {
+
       return res.status(404).json({
         message: "Analysis Not Found",
       });
+
     }
 
     return res.json(analysis);
+
   } catch (err) {
+
     return res.status(500).json({
       message: err.message,
     });
+
   }
 };
