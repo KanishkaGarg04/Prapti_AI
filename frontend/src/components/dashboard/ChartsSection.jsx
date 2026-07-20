@@ -12,181 +12,140 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import { useAnalysis } from "../../context/AnalysisContext";
-import { motion } from "framer-motion";
 
-const COLORS = ["#2563EB", "#93C5FD"];
+import { motion } from "framer-motion";
+import { useAnalysis } from "../../context/AnalysisContext";
+
+const COLORS = ["#2563EB", "#60A5FA"];
 
 export default function ChartsSection() {
   const { analysis } = useAnalysis();
 
+  if (!analysis) return null;
+
   const growthData =
-    analysis?.projection?.length > 0
-      ? analysis.projection
-      : [
-          { year: 1, amount: 100000 },
-          { year: 2, amount: 230000 },
-          { year: 3, amount: 410000 },
-          { year: 4, amount: 620000 },
-          { year: 5, amount: 870000 },
-        ];
+    analysis.projection || [];
 
   const cashflow =
-    analysis?.cashflow?.length > 0
-      ? analysis.cashflow
-      : [
-          {
-            month: "Income",
-            value: 80000,
-          },
-          {
-            month: "Expenses",
-            value: 26000,
-          },
-          {
-            month: "EMI",
-            value: 18000,
-          },
-        ];
+    analysis.cashflow || [
+      {
+        month: "Income",
+        value: analysis.monthlyIncome || 0,
+      },
+      {
+        month: "Expenses",
+        value: analysis.monthlyExpenses || 0,
+      },
+      {
+        month: "EMI",
+        value: analysis.emi || 0,
+      },
+      {
+        month: "Savings",
+        value: analysis.monthlySurplus || 0,
+      },
+    ];
 
   const emiData =
-    analysis?.emiDistribution?.length > 0
-      ? analysis.emiDistribution
-      : [
-          {
-            name: "Principal",
-            value: 72,
-          },
-          {
-            name: "Interest",
-            value: 28,
-          },
-        ];
+    analysis.emiDistribution || [
+      {
+        name: "Principal",
+        value: 70,
+      },
+      {
+        name: "Interest",
+        value: 30,
+      },
+    ];
 
   return (
     <div className="mt-8 space-y-8">
 
-      {/* Investment Growth */}
       <motion.div
-        initial={{
-        opacity:0,
-        y:40,
-        }}
-        animate={{
-        opacity:1,
-        y:0,
-        }}
-        transition={{
-        duration:.7,
-        }}
-        ></motion.div>
-      <div className="border border-gray-200 bg-white shadow-sm">
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
 
-        <div className="border-b border-gray-200 px-6 py-5">
+        <div className="rounded-2xl border bg-white shadow-sm">
 
-          <p className="text-xs uppercase tracking-[0.3em] text-blue-600">
-            Investment Projection
-          </p>
+          <div className="border-b p-6">
+            <h2 className="text-2xl font-bold">
+              Investment Growth Projection
+            </h2>
+          </div>
 
-          <h2 className="mt-2 text-xl font-semibold">
-            Long-Term Growth
-          </h2>
+          <div className="h-96 p-6">
 
-        </div>
+            <ResponsiveContainer>
 
-        <div className="h-96 p-6">
+              <AreaChart data={growthData}>
 
-          <ResponsiveContainer width="100%" height="100%">
+                <defs>
 
-            <AreaChart data={growthData}>
+                  <linearGradient
+                    id="growth"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
 
-              <defs>
+                    <stop
+                      offset="0%"
+                      stopColor="#2563EB"
+                      stopOpacity={0.4}
+                    />
 
-                <linearGradient
-                  id="growthGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                    <stop
+                      offset="100%"
+                      stopColor="#2563EB"
+                      stopOpacity={0}
+                    />
 
-                  <stop
-                    offset="0%"
-                    stopColor="#2563EB"
-                    stopOpacity={0.35}
-                  />
+                  </linearGradient>
 
-                  <stop
-                    offset="100%"
-                    stopColor="#2563EB"
-                    stopOpacity={0}
-                  />
+                </defs>
 
-                </linearGradient>
+                <CartesianGrid strokeDasharray="3 3" />
 
-              </defs>
+                <XAxis dataKey="year" />
 
-              <CartesianGrid
-                strokeDasharray="4 4"
-                stroke="#E5E7EB"
-              />
+                <YAxis />
 
-              <XAxis
-                dataKey="year"
-                tickLine={false}
-                axisLine={false}
-              />
+                <Tooltip />
 
-              <YAxis
-                tickFormatter={(value) => `₹${value / 1000}k`}
-                tickLine={false}
-                axisLine={false}
-              />
+                <Area
+                  dataKey="amount"
+                  stroke="#2563EB"
+                  fill="url(#growth)"
+                  strokeWidth={3}
+                />
 
-              <Tooltip
-                formatter={(value) => [
-                  `₹${Number(value).toLocaleString("en-IN")}`,
-                  "Investment",
-                ]}
-              />
+              </AreaChart>
 
-              <Area
-                type="monotone"
-                dataKey="amount"
-                stroke="#2563EB"
-                strokeWidth={3}
-                fill="url(#growthGradient)"
-                animationDuration={1500}
-                animationEasing="ease"
-              />
+            </ResponsiveContainer>
 
-            </AreaChart>
-
-          </ResponsiveContainer>
+          </div>
 
         </div>
 
-      </div>
-
-      {/* Bottom Charts */}
+      </motion.div>
 
       <div className="grid gap-8 lg:grid-cols-2">
 
-        {/* EMI Distribution */}
+        <div className="rounded-2xl border bg-white shadow-sm">
 
-        <div className="border border-gray-200 bg-white shadow-sm">
+          <div className="border-b p-6">
 
-          <div className="border-b border-gray-200 px-6 py-5">
-
-            <h3 className="font-semibold">
+            <h2 className="text-xl font-bold">
               EMI Distribution
-            </h3>
+            </h2>
 
           </div>
 
           <div className="h-80">
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer>
 
               <PieChart>
 
@@ -195,22 +154,19 @@ export default function ChartsSection() {
                   dataKey="value"
                   nameKey="name"
                   innerRadius={70}
-                  outerRadius={105}
-                  paddingAngle={3}
+                  outerRadius={110}
                 >
 
-                  {emiData.map((entry, index) => (
+                  {emiData.map((item, index) => (
                     <Cell
                       key={index}
-                      fill={COLORS[index % COLORS.length]}
+                      fill={COLORS[index]}
                     />
                   ))}
 
                 </Pie>
 
-                <Tooltip
-                  formatter={(value) => [`${value}%`, "Share"]}
-                />
+                <Tooltip />
 
               </PieChart>
 
@@ -220,53 +176,34 @@ export default function ChartsSection() {
 
         </div>
 
-        {/* Cash Flow */}
+        <div className="rounded-2xl border bg-white shadow-sm">
 
-        <div className="border border-gray-200 bg-white shadow-sm">
+          <div className="border-b p-6">
 
-          <div className="border-b border-gray-200 px-6 py-5">
-
-            <h3 className="font-semibold">
-              Monthly Cash Flow
-            </h3>
+            <h2 className="text-xl font-bold">
+              Monthly Cashflow
+            </h2>
 
           </div>
 
-          <div className="h-80 p-5">
+          <div className="h-80 p-6">
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer>
 
               <BarChart data={cashflow}>
 
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#E5E7EB"
-                />
+                <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                />
+                <XAxis dataKey="month" />
 
-                <YAxis
-                  tickFormatter={(value) => `₹${value / 1000}k`}
-                  tickLine={false}
-                  axisLine={false}
-                />
+                <YAxis />
 
-                <Tooltip
-                  formatter={(value) => [
-                    `₹${Number(value).toLocaleString("en-IN")}`,
-                    "",
-                  ]}
-                />
+                <Tooltip />
 
                 <Bar
                   dataKey="value"
                   fill="#2563EB"
-                  radius={[6, 6, 0, 0]}
-                  animationDuration={1500}
+                  radius={[8, 8, 0, 0]}
                 />
 
               </BarChart>

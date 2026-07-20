@@ -8,7 +8,11 @@ import { motion } from "framer-motion";
 import { useAnalysis } from "../../context/AnalysisContext";
 
 export default function RecentAnalysis() {
-  const { history } = useAnalysis();
+  const { history = [] } = useAnalysis();
+
+  if (!Array.isArray(history)) {
+    return null;
+  }
 
   return (
     <section className="mt-8 rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -28,15 +32,17 @@ export default function RecentAnalysis() {
         </div>
       ) : (
         history.map((item, index) => {
+          const score = item.healthScore ?? item.riskScore ?? 0;
+
           let Icon = CheckCircle2;
           let color = "text-green-600";
           let bg = "bg-green-50";
 
-          if (item.riskScore >= 70) {
+          if (score < 50) {
             Icon = AlertTriangle;
             color = "text-red-600";
             bg = "bg-red-50";
-          } else if (item.riskScore >= 40) {
+          } else if (score < 75) {
             Icon = TrendingUp;
             color = "text-blue-600";
             bg = "bg-blue-50";
@@ -44,44 +50,39 @@ export default function RecentAnalysis() {
 
           return (
             <motion.div
-              key={item._id}
-              initial={{ opacity: 0, x: -30 }}
+              key={item._id || index}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.4,
-                delay: index * 0.1,
-              }}
-              className="flex items-center justify-between border-b border-gray-100 px-6 py-5 transition hover:bg-slate-50"
+              transition={{ delay: index * 0.08 }}
+              className="flex items-center justify-between border-b border-gray-100 px-6 py-5 hover:bg-slate-50"
             >
               <div className="flex items-center gap-4">
                 <div className={`${bg} rounded-lg p-3`}>
-                  <Icon
-                    size={20}
-                    className={color}
-                  />
+                  <Icon className={color} size={20} />
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900">
-                    Loan ₹{Number(item.loanAmount).toLocaleString("en-IN")}
+                  <h3 className="font-semibold">
+                    Loan ₹
+                    {Number(item.loanAmount || 0).toLocaleString("en-IN")}
                   </h3>
 
                   <p className="text-sm text-gray-500">
-                    Interest {item.interestRate}% • {item.tenure} Years
+                    {item.interestRate}% • {item.tenure} Years
                   </p>
                 </div>
               </div>
 
               <div className="text-right">
                 <p className={`font-semibold ${color}`}>
-                  Risk {item.riskScore}/100
+                  Health {score}/100
                 </p>
 
                 <div className="mt-2 flex items-center justify-end gap-2 text-xs text-gray-500">
                   <Clock3 size={13} />
-
-                  {new Date(item.createdAt).toLocaleString()}
+                  {item.createdAt
+                    ? new Date(item.createdAt).toLocaleString()
+                    : "-"}
                 </div>
               </div>
             </motion.div>

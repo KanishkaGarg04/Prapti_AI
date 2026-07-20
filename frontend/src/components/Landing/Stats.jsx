@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import CountUp from "react-countup";
 
 const stats = [
   {

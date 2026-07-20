@@ -4,13 +4,13 @@ import { useAnalysis } from "../../context/AnalysisContext";
 import toast from "react-hot-toast";
 
 export default function AnalysisForm() {
- const {
-  setAnalysis,
-  loading,
-  setLoading,
-  history,
-  setHistory,
-} = useAnalysis();
+  const {
+    setAnalysis,
+    loading,
+    setLoading,
+    setHistory,
+  } = useAnalysis();
+
   const [formData, setFormData] = useState({
     loanAmount: "",
     interestRate: "",
@@ -29,38 +29,43 @@ export default function AnalysisForm() {
     });
   }
 
- async function handleSubmit(e) {
-  e.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
-    console.log(formData);
-    const res = await api.post("/analysis", formData);
+    try {
+      setLoading(true);
 
-    setAnalysis(res.data);
-    toast.success("Financial Analysis Completed!");
-    setTimeout(() => {
-  document
-    .getElementById("dashboard-results")
-    ?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-}, 300);
-    const history = await api.get("/analysis/history");
-    setHistory(history.data);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setLoading(false);
+      const res = await api.post("/analysis", formData);
+
+      console.log("Analysis Response");
+      console.log(res.data);
+
+      setAnalysis(res.data);
+
+      toast.success("Financial Analysis Completed!");
+
+      const historyRes =  api.get("/analysis/history");
+
+      setHistory(historyRes.data);
+
+      setTimeout(() => {
+        document
+          .getElementById("dashboard-results")
+          ?.scrollIntoView({
+            behavior: "smooth",
+          });
+      }, 300);
+    } catch (err) {
+      console.error(err);
+      toast.error("Analysis Failed");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
-    <div className="border border-gray-200 bg-white shadow-sm">
-
+    <div className="border border-gray-200 bg-white shadow-sm rounded-xl">
       <div className="border-b border-gray-200 px-8 py-6">
-
         <p className="text-xs uppercase tracking-[0.3em] text-blue-600">
           Financial Analysis
         </p>
@@ -72,65 +77,68 @@ export default function AnalysisForm() {
         <p className="mt-2 text-sm text-gray-500">
           Enter your financial information to receive AI-powered recommendations.
         </p>
-
       </div>
 
       <form
         onSubmit={handleSubmit}
         className="grid gap-6 p-8 md:grid-cols-2"
       >
-
         <Input
           label="Loan Amount"
           name="loanAmount"
-          placeholder="₹ 5,00,000"
           value={formData.loanAmount}
           onChange={handleChange}
+          placeholder="₹ 5,00,000"
+          disabled={loading}
         />
 
         <Input
           label="Interest Rate (%)"
           name="interestRate"
-          placeholder="8.5"
           value={formData.interestRate}
           onChange={handleChange}
+          placeholder="8.5"
+          disabled={loading}
         />
 
         <Input
           label="Loan Tenure (Years)"
           name="tenure"
-          placeholder="20"
           value={formData.tenure}
           onChange={handleChange}
+          placeholder="20"
+          disabled={loading}
         />
 
         <Input
           label="Monthly Income"
           name="monthlyIncome"
-          placeholder="₹ 80,000"
           value={formData.monthlyIncome}
           onChange={handleChange}
+          placeholder="₹ 80,000"
+          disabled={loading}
         />
 
         <Input
           label="Monthly Expenses"
           name="monthlyExpenses"
-          placeholder="₹ 28,000"
           value={formData.monthlyExpenses}
           onChange={handleChange}
+          placeholder="₹ 25,000"
+          disabled={loading}
         />
 
         <Input
           label="Existing EMI"
           name="existingEmi"
-          placeholder="₹ 12,000"
           value={formData.existingEmi}
           onChange={handleChange}
+          placeholder="₹ 10,000"
+          disabled={loading}
         />
 
         <div>
-
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium">
             Investment Preference
           </label>
 
@@ -138,19 +146,18 @@ export default function AnalysisForm() {
             name="investment"
             value={formData.investment}
             onChange={handleChange}
-            className="mt-2 w-full border border-gray-300 bg-white px-4 py-3 outline-none focus:border-blue-500"
+            disabled={loading}
+            className="mt-2 w-full border px-4 py-3 rounded-lg"
           >
             <option value="">Select</option>
             <option>Low Risk</option>
             <option>Moderate</option>
             <option>High Growth</option>
           </select>
-
         </div>
 
         <div>
-
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium">
             Financial Goal
           </label>
 
@@ -158,7 +165,8 @@ export default function AnalysisForm() {
             name="goal"
             value={formData.goal}
             onChange={handleChange}
-            className="mt-2 w-full border border-gray-300 bg-white px-4 py-3 outline-none focus:border-blue-500"
+            disabled={loading}
+            className="mt-2 w-full border px-4 py-3 rounded-lg"
           >
             <option value="">Select</option>
             <option>Debt Reduction</option>
@@ -166,35 +174,19 @@ export default function AnalysisForm() {
             <option>Retirement</option>
             <option>Emergency Fund</option>
           </select>
-
         </div>
 
         <div className="md:col-span-2">
-
           <button
-            type="submit"
             disabled={loading}
-            className="
-              w-full
-              rounded-xl
-              bg-blue-600
-              py-4
-              font-semibold
-              text-white
-              transition-all
-              duration-300
-              hover:bg-blue-700
-              disabled:cursor-not-allowed
-              disabled:opacity-70
-            "
+            className="w-full rounded-xl bg-blue-600 py-4 font-semibold text-white hover:bg-blue-700 transition"
           >
-            {loading ? "Analyzing with AI..." : "Analyze Financial Profile"}
+            {loading
+              ? "Analyzing..."
+              : "Analyze Financial Profile"}
           </button>
-
         </div>
-
       </form>
-
     </div>
   );
 }
@@ -203,58 +195,24 @@ function Input({
   label,
   name,
   value,
-  placeholder,
   onChange,
-  disabled
+  placeholder,
+  disabled,
 }) {
-  <input
-  disabled={disabled}
-  name={name}
-  value={value}
-  placeholder={placeholder}
-  onChange={onChange}
-  className="
-    mt-2
-    w-full
-    border
-    border-gray-300
-    bg-white
-    px-4
-    py-3
-    outline-none
-    transition
-    focus:border-blue-600
-    disabled:bg-gray-100
-    disabled:cursor-not-allowed
-  "
-/>
-  
   return (
     <div>
-
-      <label className="text-sm font-medium text-gray-700">
+      <label className="text-sm font-medium">
         {label}
       </label>
 
       <input
+        disabled={disabled}
         name={name}
         value={value}
-        placeholder={placeholder}
         onChange={onChange}
-        className="
-          mt-2
-          w-full
-          border
-          border-gray-300
-          bg-white
-          px-4
-          py-3
-          outline-none
-          transition
-          focus:border-blue-600
-        "
+        placeholder={placeholder}
+        className="mt-2 w-full border rounded-lg px-4 py-3 disabled:bg-gray-100"
       />
-
     </div>
   );
 }
