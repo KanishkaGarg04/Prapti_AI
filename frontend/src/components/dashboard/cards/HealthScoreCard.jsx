@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { HeartPulse, ShieldCheck, AlertTriangle } from "lucide-react";
+import { HeartPulse, Activity } from "lucide-react";
 import { useAnalysis } from "../../../context/AnalysisContext";
 
 export default function HealthScoreCard() {
@@ -7,198 +7,112 @@ export default function HealthScoreCard() {
 
   if (!analysis) return null;
 
-  const score = Number(analysis.healthScore) || 0;
+  const score = analysis.healthScore || 0;
 
-  let color = "text-red-600";
-  let bg = "bg-red-500";
-  let ring = "stroke-red-500";
+  let colorClass = "text-rose-600 bg-rose-50 border-rose-100";
+  let textColor = "text-rose-600";
+  let barColor = "bg-rose-600";
   let status = "Critical";
-  let advice = "Reduce debt and improve monthly savings.";
 
   if (score >= 90) {
-    color = "text-green-600";
-    bg = "bg-green-500";
-    ring = "stroke-green-500";
+    colorClass = "text-emerald-600 bg-emerald-50 border-emerald-100";
+    textColor = "text-emerald-600";
+    barColor = "bg-emerald-600";
     status = "Excellent";
-    advice = "Outstanding financial health. Keep investing consistently.";
   } else if (score >= 75) {
-    color = "text-emerald-600";
-    bg = "bg-emerald-500";
-    ring = "stroke-emerald-500";
+    colorClass = "text-emerald-600 bg-emerald-50 border-emerald-100";
+    textColor = "text-emerald-600";
+    barColor = "bg-emerald-600";
     status = "Good";
-    advice = "Healthy financial position. Continue building wealth.";
   } else if (score >= 60) {
-    color = "text-yellow-600";
-    bg = "bg-yellow-500";
-    ring = "stroke-yellow-500";
+    colorClass = "text-amber-600 bg-amber-50 border-amber-100";
+    textColor = "text-amber-600";
+    barColor = "bg-amber-500";
     status = "Average";
-    advice = "Increase savings and reduce unnecessary expenses.";
   } else if (score >= 40) {
-    color = "text-orange-600";
-    bg = "bg-orange-500";
-    ring = "stroke-orange-500";
+    colorClass = "text-orange-600 bg-orange-50 border-orange-100";
+    textColor = "text-orange-600";
+    barColor = "bg-orange-500";
     status = "Needs Improvement";
-    advice = "Focus on reducing EMI burden and increasing emergency funds.";
   }
-
-  const radius = 46;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 25 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="
-        rounded-2xl
-        border
-        border-slate-200
-        bg-white
-        p-6
-        shadow-sm
-        hover:shadow-xl
-        transition-all
-      "
+      transition={{ duration: 0.2 }}
+      className="bg-white rounded-xl border border-slate-200/90 shadow-sm col-span-1 lg:col-span-2 overflow-hidden flex flex-col justify-between"
+      style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
     >
-      <div className="flex items-center justify-between">
+      {/* Zerodha-style thin brand accent bar (Dynamic based on health score) */}
+      <div className={`h-1 w-full ${barColor}`} />
 
-        <div>
-
-          <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-            Financial Health
-          </p>
-
-          <h2 className="mt-2 text-2xl font-bold">
-            Health Score
-          </h2>
-
-        </div>
-
-        <HeartPulse
-          size={34}
-          className={color}
-        />
-
-      </div>
-
-      <div className="mt-8 flex items-center justify-center">
-
-        <div className="relative h-40 w-40">
-
-          <svg
-            className="h-40 w-40 rotate-[-90deg]"
-            viewBox="0 0 120 120"
-          >
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              fill="none"
-              stroke="#E5E7EB"
-              strokeWidth="8"
-            />
-
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              fill="none"
-              strokeWidth="8"
-              strokeLinecap="round"
-              className={ring}
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-            />
-          </svg>
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-
-            <h1 className={`text-4xl font-bold ${color}`}>
-              {score}
-            </h1>
-
-            <span className="text-gray-500 text-sm">
-              /100
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <div className="mt-6 flex items-center justify-center">
-
-        <span
-          className={`
-            rounded-full
-            px-4
-            py-2
-            text-sm
-            font-semibold
-            text-white
-            ${bg}
-          `}
-        >
-          {status}
-        </span>
-
-      </div>
-
-      <div className="mt-6">
-
-        <div className="flex justify-between text-sm">
-
-          <span className="text-gray-500">
-            Overall Progress
-          </span>
-
-          <span className={color}>
-            {score}%
-          </span>
-
-        </div>
-
-        <div className="mt-2 h-3 overflow-hidden rounded-full bg-gray-200">
-
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${score}%` }}
-            transition={{ duration: 1 }}
-            className={`h-full ${bg}`}
-          />
-
-        </div>
-
-      </div>
-
-      <div className="mt-6 rounded-xl bg-slate-50 p-4">
-
-        <div className="flex items-start gap-3">
-
-          {score >= 75 ? (
-            <ShieldCheck className={color} size={22} />
-          ) : (
-            <AlertTriangle className={color} size={22} />
-          )}
-
+      <div className="p-6 md:p-8">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>
-
-            <h3 className="font-semibold">
-              AI Insight
-            </h3>
-
-            <p className="mt-1 text-sm text-gray-600">
-              {advice}
-            </p>
-
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
+                Financial Health Score
+              </span>
+              <span className={`text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 border ${colorClass}`}>
+                {status} Status
+              </span>
+            </div>
+            <div className={`text-3xl md:text-4xl font-bold tracking-tight mt-1 ${textColor}`}>
+              {score} <span className="text-lg font-medium text-slate-400">/ 100</span>
+            </div>
           </div>
 
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 px-4 py-2.5 rounded-lg">
+            <div className={`p-2 rounded-md ${colorClass}`}>
+              <HeartPulse size={20} />
+            </div>
+            <div>
+              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Overall Rating</p>
+              <p className="text-xs font-bold text-slate-800">System Diagnostic</p>
+            </div>
+          </div>
         </div>
 
-      </div>
+        {/* Data Grid / Metrics (Zerodha Console Style) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 items-center">
+          {/* Metric 1 */}
+          <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Debt Ratio Impact</p>
+            <p className="text-xl font-bold text-slate-900 mt-1">
+              {analysis.debtRatio?.toFixed(1)}%
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">Leverage weighting factored</p>
+          </div>
 
+          {/* Metric 2 */}
+          <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Savings Rate Impact</p>
+            <p className="text-xl font-bold text-slate-900 mt-1">
+              {analysis.savingsRate?.toFixed(1)}%
+            </p>
+            <p className="text-[11px] text-blue-600 font-medium mt-1">Surplus weighting factored</p>
+          </div>
+
+          {/* Metric 3 / Progress Bar area */}
+          <div className="flex flex-col justify-center">
+            <div className="flex justify-between items-center text-xs font-medium text-slate-600 mb-1.5">
+              <span className="flex items-center gap-1">
+                <Activity size={14} className={textColor} /> Health Index
+              </span>
+              <span className="font-bold text-slate-900">{score}%</span>
+            </div>
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
+                style={{ width: `${Math.min(score, 100)}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Target benchmark: 80+ score</p>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }

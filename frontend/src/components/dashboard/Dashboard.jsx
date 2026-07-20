@@ -14,8 +14,8 @@ import HealthScoreCard from "./cards/HealthScoreCard";
 import SavingsCard from "./cards/SavingsCard";
 import DebtRatioCard from "./cards/DebtRatioCard";
 import EmergencyFundCard from "./cards/EmergencyFundCard";
+import AIInsights from "./AIInsights";
 
-// (Create this component next)
 import InvestmentPlanner from "./InvestmentPlanner";
 
 export default function Dashboard() {
@@ -50,7 +50,7 @@ export default function Dashboard() {
 
             <MarketOverview />
 
-            {/* Header */}
+           
 
             <div className="mb-8">
 
@@ -69,40 +69,29 @@ export default function Dashboard() {
 
             </div>
 
-            {/* Form + KPI Cards */}
+         
+            <div className="flex-1 overflow-y-auto bg-slate-50">
+              <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
 
-            <div className="grid gap-8 xl:grid-cols-3">
-
-              <div className="xl:col-span-2">
                 <AnalysisForm />
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+                  <HealthScoreCard />
+
+                  <SavingsCard />
+
+                  <DebtRatioCard />
+
+                  <EmergencyFundCard />
+
+                </div>
+                <AIInsights />
+                <ChartsSection />
+                <InvestmentPlanner />
+                <RecentAnalysis />
+
               </div>
-
-              <div className="space-y-5">
-
-                <HealthScoreCard />
-
-                <SavingsCard />
-
-                <DebtRatioCard />
-
-                <EmergencyFundCard />
-
-              </div>
-
             </div>
-
-            {/* Charts */}
-
-            <div className="mt-8 space-y-8">
-
-              <ChartsSection />
-
-              <InvestmentPlanner />
-
-              <RecentAnalysis />
-
-            </div>
-
           </div>
 
         </main>
