@@ -7,21 +7,29 @@ import {
   calculateEmergencyFund,
   calculateHealthScore,
   calculateLoanOptimization,
-  investmentAllocation,
 } from "./calculators.js";
 
+import { generateInvestmentPlan } from "./investmentService.js";
+import { getMarketSnapshot } from "./marketService.js";
 import { generateRecommendations } from "./reccomendationEngine.js";
 
-export function calculateFinance(data) {
-  // Convert safely
+export async function calculateFinance(data) {
+  // ===============================
+  // User Inputs
+  // ===============================
+
   const loanAmount = Number(data.loanAmount) || 0;
   const interestRate = Number(data.interestRate) || 0;
   const tenure = Number(data.tenure) || 0;
+
   const income = Number(data.monthlyIncome) || 0;
   const expenses = Number(data.monthlyExpenses) || 0;
   const existingEmi = Number(data.existingEmi) || 0;
 
+  // ===============================
   // Validation
+  // ===============================
+
   if (
     loanAmount <= 0 ||
     interestRate <= 0 ||
@@ -31,20 +39,36 @@ export function calculateFinance(data) {
     throw new Error("Invalid financial inputs.");
   }
 
-  // EMI
+  // ===============================
+  // EMI Calculation
+  // ===============================
+
   const emi = calculateEMI(
     loanAmount,
     interestRate,
     tenure
   );
-  console.log("EMI =", emi);
 
   const totalPayment = emi * tenure * 12;
-  const totalInterest = totalPayment - loanAmount;
-console.log({
-  totalPayment,
-  totalInterest
-});
+
+  const totalInterest =
+    totalPayment - loanAmount;
+
+  // ===============================
+  // EMI Distribution
+  // ===============================
+
+  const principalPercent = Number(
+    ((loanAmount / totalPayment) * 100).toFixed(1)
+  );
+
+  const interestPercent = Number(
+    ((totalInterest / totalPayment) * 100).toFixed(1)
+  );
+
+  // ===============================
+  // Financial Metrics
+  // ===============================
 
   const debtRatio = calculateDebtRatio(
     emi + existingEmi,
@@ -60,10 +84,11 @@ console.log({
   const emergencyFund =
     calculateEmergencyFund(expenses);
 
-  const healthScore = calculateHealthScore({
-    debtRatio,
-    savingsRate: savings.savingsRate,
-  });
+  const healthScore =
+    calculateHealthScore({
+      debtRatio,
+      savingsRate: savings.savingsRate,
+    });
 
   const optimizedLoan =
     calculateLoanOptimization(
@@ -71,123 +96,222 @@ console.log({
       totalInterest
     );
 
-  const investmentPlan =
-    investmentAllocation(data.investment);
+  // ===============================
+  // Investment Plan
+  // ===============================
 
-  const projection = generateProjection(
-    Math.max(
-      5000,
-      savings.monthlySurplus * 0.6
-    )
-  );
+  const investmentPlan =
+    generateInvestmentPlan({
+      monthlySurplus:
+        savings.monthlySurplus,
+      risk: data.investment,
+      goal: data.goal,
+    });
+
+  // ===============================
+  // Market Snapshot
+  // ===============================
+
+  let market;
+
+  try {
+    market = await getMarketSnapshot();
+  } catch (err) {
+    console.log(
+      "Market API unavailable. Using fallback."
+    );
+
+    market = {
+      nifty: {
+        price: 25200,
+        changePercent: 0,
+      },
+
+      usdInr: {
+        price: 86,
+      },
+
+      gold: {
+        price: 3400,
+      },
+
+      bitcoin: {
+        price: 115000,
+        changePercent: 0,
+      },
+
+      fdRate: 6.5,
+
+      updatedAt: new Date(),
+    };
+  }
+
+  // ===============================
+  // Projection
+  // ===============================
+
+  const projection =
+    generateProjection(
+      Math.max(
+        5000,
+        savings.monthlySurplus * 0.6
+      )
+    );
+
+  // ===============================
+  // Recommendations
+  // ===============================
 
   const recommendations =
     generateRecommendations({
       debtRatio,
       savingsRate: savings.savingsRate,
-      monthlySurplus: savings.monthlySurplus,
+      monthlySurplus:
+        savings.monthlySurplus,
       healthScore,
     });
 
-  console.log("===== FINANCIAL RESULT =====");
-  console.log({
+  // ===============================
+  // Risk Score
+  // ===============================
+
+  const riskScore = Math.max(
+    0,
+    Math.min(100, 100 - healthScore)
+  );
+
+  // ===============================
+  // Return
+  // ===============================
+
+  return {
+    // User Inputs
+
     loanAmount,
     interestRate,
     tenure,
-    income,
-    expenses,
+
+    monthlyIncome: income,
+    monthlyExpenses: expenses,
     existingEmi,
-    emi,
-    totalPayment,
-    totalInterest,
-    debtRatio,
-    savings,
-    emergencyFund,
-    healthScore,
-    optimizedLoan,
-    investmentPlan,
-    projection,
-    recommendations,
-  });
 
-  return {
-    emi: Number(emi),
+    // Loan
 
-    totalInterest: Number(totalInterest),
+    emi: Number(emi.toFixed(2)),
+    totalPayment: Number(
+      totalPayment.toFixed(2)
+    ),
+    totalInterest: Number(
+      totalInterest.toFixed(2)
+    ),
 
-    totalPayment: Number(totalPayment),
+    // Scores
 
-    debtRatio: Number(debtRatio),
+    debtRatio: Number(
+      debtRatio.toFixed(2)
+    ),
 
-    savingsRate: Number(savings.savingsRate),
+    savingsRate: Number(
+      savings.savingsRate.toFixed(2)
+    ),
 
     monthlySurplus: Number(
-      savings.monthlySurplus
+      savings.monthlySurplus.toFixed(2)
     ),
 
     emergencyFund: Number(
-      emergencyFund
+      emergencyFund.toFixed(2)
     ),
 
     healthScore: Number(
-      healthScore
+      healthScore.toFixed(0)
     ),
+
+    riskScore,
+
+    // Optimization
 
     optimizedLoan: {
       optimizedEmi: Number(
-        optimizedLoan.optimizedEmi
+        optimizedLoan.optimizedEmi.toFixed(2)
       ),
 
-      optimizedYears: Number(
-        optimizedLoan.optimizedYears
-      ),
+      optimizedYears:
+        optimizedLoan.optimizedYears,
 
       optimizedInterest: Number(
-        optimizedLoan.optimizedInterest
+        optimizedLoan.optimizedInterest.toFixed(
+          2
+        )
       ),
 
       interestSaved: Number(
-        optimizedLoan.interestSaved
+        optimizedLoan.interestSaved.toFixed(
+          2
+        )
       ),
     },
 
+    // Investment
+
     investmentPlan,
+
+    // Projection
 
     projection,
 
+    // Market
+
+    market,
+
+    // Recommendation Cards
+
     recommendations,
 
-    recommendation:
-      recommendations
-        .map(
-          (r) =>
-            `• ${r.title}\n${r.description}`
-        )
-        .join("\n\n"),
+    // Gemini Prompt
+
+    recommendation: recommendations
+      .map(
+        (r) =>
+          `• ${r.title}\n${r.description}`
+      )
+      .join("\n\n"),
+
+    // Cashflow Chart
 
     cashflow: [
       {
         month: "Income",
-        value: Number(income),
+        value: income,
       },
+
       {
         month: "Expenses",
-        value: Number(expenses),
+        value: expenses,
       },
+
       {
         month: "EMI",
-        value: Number(emi),
+        value: emi,
+      },
+
+      {
+        month: "Savings",
+        value: savings.monthlySurplus,
       },
     ],
+
+    // Pie Chart
 
     emiDistribution: [
       {
         name: "Principal",
-        value: 72,
+        value: principalPercent,
       },
+
       {
         name: "Interest",
-        value: 28,
+        value: interestPercent,
       },
     ],
   };

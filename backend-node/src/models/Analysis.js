@@ -76,6 +76,31 @@ const analysisSchema = new mongoose.Schema(
   type: [recommendationSchema],
   default: [],
 },
+market: {
+  nifty: {
+    price: Number,
+    change: Number,
+    changePercent: Number,
+  },
+
+  sensex: {
+    price: Number,
+    change: Number,
+    changePercent: Number,
+  },
+
+  usdInr: {
+    price: Number,
+  },
+
+  gold: {
+    price: Number,
+  },
+
+  fdRate: Number,
+
+  updatedAt: Date,
+},
 
     recommendation: String,
   },

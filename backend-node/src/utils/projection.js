@@ -1,16 +1,24 @@
 export function generateProjection(monthlyInvestment) {
+
+  const annualReturn = 0.12;
+
   const data = [];
 
-  let total = 0;
+  let amount = 0;
 
-  for (let year = 1; year <= 6; year++) {
-    total += monthlyInvestment * 12 * 1.12;
+  for (let year = 1; year <= 10; year++) {
+
+    amount =
+      (amount + monthlyInvestment * 12) *
+      (1 + annualReturn);
 
     data.push({
-      year: String(2024 + year),
-      amount: Math.round(total),
+      year,
+      amount: Math.round(amount),
     });
+
   }
 
   return data;
+
 }

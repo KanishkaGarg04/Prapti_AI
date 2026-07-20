@@ -4,67 +4,29 @@ import { getRecommendation } from "../services/geminiService.js";
 
 export const analyzeFinance = async (req, res) => {
   try {
-    console.log("=========== REQUEST BODY ===========");
+    console.log("Incoming Request:");
     console.log(req.body);
 
-    const finance = calculateFinance(req.body);
+    const finance = await calculateFinance(req.body);
 
-    console.log("=========== FINANCE RESULT ===========");
+    console.log("Finance:");
     console.log(finance);
 
-    // Stop immediately if calculations failed
-    if (
-      Number.isNaN(finance.emi) ||
-      Number.isNaN(finance.totalInterest) ||
-      Number.isNaN(finance.totalPayment)
-    ) {
-      return res.status(400).json({
-        message: "Finance calculation failed.",
-        finance,
-      });
-    }
-
-    let aiRecommendation = finance.recommendation;
-
-    try {
-      aiRecommendation = await getRecommendation(finance);
-    } catch (err) {
-      console.log("Gemini Error:", err.message);
-    }
-
-    const analysisData = {
-      ...req.body,
-
-      ...finance,
-
-      recommendation: aiRecommendation,
-
-      recommendations: finance.recommendations || [],
-    };
-
-    console.log("=========== SAVING ===========");
-    console.log(JSON.stringify(analysisData, null, 2));
-    console.log("Saving to Mongo:");
-    console.log(JSON.stringify({
+    const analysis = await Analysis.create({
       ...req.body,
       ...finance,
-      recommendation: aiRecommendation || finance.recommendation,
-    }, null, 2));
+    });
 
-    const analysis = await Analysis.create(analysisData);
-      console.log("===== TYPE CHECK =====");
-console.log(typeof finance.recommendations);
-console.log(Array.isArray(finance.recommendations));
-console.log(finance.recommendations);
-console.log("First item:", finance.recommendations?.[0]);
     return res.status(201).json(analysis);
+
   } catch (err) {
-    console.log("=========== MONGOOSE ERROR ===========");
+
+    console.error("========== ERROR ==========");
     console.error(err);
+    console.error(err.stack);
 
     return res.status(500).json({
-      message: "Analysis Failed",
-      error: err.message,
+      message: err.message,
     });
   }
 };
