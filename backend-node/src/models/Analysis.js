@@ -7,14 +7,20 @@ const projectionSchema = new mongoose.Schema({
 
 const recommendationSchema = new mongoose.Schema(
   {
-    type: String,
-    title: String,
-    description: String,
-    priority: String,
+    summary: String,
+
+    strengths: [String],
+
+    risks: [String],
+
+    actions: [String],
+
+    investmentAdvice: String,
+
+    loanAdvice: String,
   },
   { _id: false }
 );
-
 const analysisSchema = new mongoose.Schema(
   {
     loanAmount: Number,
@@ -101,19 +107,7 @@ market: {
 
   updatedAt: Date,
 },
-  aiRecommendation: {
-  summary: String,
-
-  strengths: [String],
-
-  risks: [String],
-
-  actions: [String],
-
-  investmentAdvice: String,
-
-  loanAdvice: String,
-},
+  aiRecommendation: recommendationSchema,
     recommendation: String,
   },
   {

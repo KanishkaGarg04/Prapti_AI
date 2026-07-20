@@ -1,42 +1,25 @@
 import Analysis from "../models/Analysis.js";
 import { calculateFinance } from "../services/financialService.js";
-import { getRecommendation } from "../services/geminiService.js";
+import { getRecommendation } from "../services/llmService.js";
 
 export const analyzeFinance = async (req, res) => {
   try {
     console.log("Incoming Request:");
     console.log(req.body);
 
-    // Financial calculations
     const finance = await calculateFinance(req.body);
 
-    // AI Recommendation
-    let aiRecommendation = null;
+    console.log("Finance Calculated");
 
-    try {
-      aiRecommendation = await getRecommendation({
-        ...finance,
-        ...req.body,
-      });
-    } catch (err) {
-      console.log("Gemini Error:");
-      console.log(err.message);
-    }
+    const aiRecommendation =
+      await getRecommendation(finance);
 
-    // Save to MongoDB
     const analysis = await Analysis.create({
       ...req.body,
 
       ...finance,
 
       aiRecommendation,
-
-      recommendation:
-        aiRecommendation?.summary ||
-        finance.recommendation,
-
-      recommendations:
-        finance.recommendations || [],
     });
 
     console.log("Analysis Saved Successfully");
@@ -51,48 +34,57 @@ export const analyzeFinance = async (req, res) => {
     return res.status(500).json({
       message: err.message,
     });
+
   }
 };
 
 export const getHistory = async (req, res) => {
+
   try {
 
     const history = await Analysis.find().sort({
-      createdAt: -1,
+      createdAt:-1,
     });
 
     return res.json(history);
 
-  } catch (err) {
+  }
+
+  catch(err){
 
     return res.status(500).json({
-      message: err.message,
+      message:err.message,
     });
 
   }
+
 };
 
-export const getAnalysis = async (req, res) => {
+export const getAnalysis = async (req,res)=>{
 
-  try {
+  try{
 
-    const analysis = await Analysis.findById(req.params.id);
+    const analysis =
+      await Analysis.findById(req.params.id);
 
-    if (!analysis) {
+    if(!analysis){
 
       return res.status(404).json({
-        message: "Analysis Not Found",
+        message:"Analysis Not Found",
       });
 
     }
 
     return res.json(analysis);
 
-  } catch (err) {
+  }
+
+  catch(err){
 
     return res.status(500).json({
-      message: err.message,
+      message:err.message,
     });
 
   }
+
 };

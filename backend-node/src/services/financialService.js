@@ -14,9 +14,7 @@ import { getMarketSnapshot } from "./marketService.js";
 import { generateRecommendations } from "./reccomendationEngine.js";
 
 export async function calculateFinance(data) {
-  // ===============================
-  // User Inputs
-  // ===============================
+
 
   const loanAmount = Number(data.loanAmount) || 0;
   const interestRate = Number(data.interestRate) || 0;
@@ -268,7 +266,7 @@ export async function calculateFinance(data) {
 
     recommendations,
 
-    // Gemini Prompt
+   
 
     recommendation: recommendations
       .map(
