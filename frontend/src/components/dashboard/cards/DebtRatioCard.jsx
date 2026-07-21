@@ -38,10 +38,9 @@ export default function DebtRatioCard() {
       className="bg-white rounded-xl border border-slate-200/90 shadow-sm col-span-1 lg:col-span-2 overflow-hidden flex flex-col justify-between"
       style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
     >
-      {/* Zerodha-style thin brand accent bar (Dynamic color based on debt risk) */}
       <div className={`h-1 w-full ${ratio < 30 ? 'bg-emerald-600' : ratio < 50 ? 'bg-amber-500' : 'bg-rose-600'}`} />
 
-      <div className="p-6 md:p-8">
+      <div className="p-4 ">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>

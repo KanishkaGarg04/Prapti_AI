@@ -107,7 +107,7 @@ export default function SummaryPanel() {
 
         <div className="px-6 py-6">
           <p className="leading-7 text-gray-600">
-            {analysis?.recommendation ||
+            {analysis?.aiRecommendation ||
               "Complete the financial analysis to receive personalized AI recommendations."}
           </p>
         </div>

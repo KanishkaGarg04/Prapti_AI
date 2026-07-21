@@ -5,7 +5,7 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="border-b border-gray-200 bg-gradient-to-b from-white to-slate-50">
+    <section id="home" className="border-b border-gray-200 bg-gradient-to-b from-white to-slate-50">
       <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2">
         {/* LEFT */}
 
@@ -64,6 +64,13 @@ export default function Hero() {
             </motion.button>
 
             <motion.button
+             onClick={() =>
+                document
+                  .getElementById("features")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
               whileHover={{
                 scale: 1.04,
                 y: -2,

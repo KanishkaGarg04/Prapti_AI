@@ -28,7 +28,7 @@ export default function FAQ() {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="border-t border-gray-200 bg-white">
+    <section id="faq" className="border-t border-gray-200 bg-white">
       <div className="max-w-5xl mx-auto px-6 py-24">
 
         <p className="text-xs uppercase tracking-[0.3em] text-blue-600">

@@ -71,74 +71,43 @@ Financial Intelligence Platform
 </div>
 
 <nav className="flex items-center gap-8">
-
-<a
-
-href="#"
-
-className="text-sm text-gray-600 hover:text-blue-600"
-
->
-
-Home
-
-</a>
-
-<a
-
-href="#"
-
-className="text-sm text-gray-600 hover:text-blue-600"
-
->
-
 <button
-onClick={()=>navigate("/dashboard")}
+  onClick={() =>
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
 >
-
-Dashboard
-
+  Home
 </button>
 
-</a>
+  <button
+    onClick={() => navigate("/dashboard")}
+    className="text-sm text-gray-600 hover:text-blue-600"
+  >
+    Dashboard
+  </button>
 
-<a
+  <button
+    onClick={() =>
+      document
+        .getElementById("features")
+        ?.scrollIntoView({
+          behavior: "smooth",
+        })
+    }
+    className="text-sm text-gray-600 hover:text-blue-600"
+  >
+    Features
+  </button>
 
-href="#"
-
-className="text-sm text-gray-600 hover:text-blue-600"
-
->
-
-Documentation
-
-</a>
-
-<button
-
-className="
-
-border
-
-border-gray-300
-
-px-4
-
-py-2
-
-text-sm
-
-hover:border-blue-600
-
-hover:text-blue-600
-
-"
-
->
-
-Launch
-
-</button>
+  <button
+    onClick={() => navigate("/login")}
+    className="rounded-md border border-gray-300 px-4 py-2 text-sm hover:border-blue-600 hover:text-blue-600"
+  >
+    Login
+  </button>
 
 </nav>
 

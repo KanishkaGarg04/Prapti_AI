@@ -13,15 +13,21 @@ export default function LandingPage() {
 
       <Navbar />
 
-      <Hero />
+      <div id="home">
+        <Hero />
+      </div>
 
       <Stats />
 
       <WorkspacePreview />
 
-      <Features />
+      <div id="features">
+        <Features />
+      </div>
 
-      <FAQ />
+      <div id="faq">
+          <FAQ />
+        </div>
 
       <CTA />
 

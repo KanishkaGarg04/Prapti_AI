@@ -39,12 +39,19 @@ export default function AnalysisForm() {
 
       console.log("Analysis Response");
       console.log(res.data);
+      console.log("FULL RESPONSE");
+console.log(res.data);
 
+console.log("AI Recommendation");
+console.log(res.data.aiRecommendation);
+
+console.log("Recommendations");
+console.log(res.data.recommendations);
       setAnalysis(res.data);
 
       toast.success("Financial Analysis Completed!");
 
-      const historyRes =  api.get("/analysis/history");
+      const historyRes = await  api.get("/analysis/history");
 
       setHistory(historyRes.data);
 

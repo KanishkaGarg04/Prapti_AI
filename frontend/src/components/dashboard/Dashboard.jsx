@@ -24,7 +24,7 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadHistory() {
       try {
-        const res = api.get("/analysis/history");
+        const res = await api.get("/analysis/history");
         setHistory(res.data);
       } catch (err) {
         console.error(err);
@@ -70,7 +70,7 @@ export default function Dashboard() {
             </div>
 
          
-            <div className="flex-1 overflow-y-auto bg-slate-50">
+            <div id = "analysis" className="flex-1 overflow-y-auto bg-slate-50">
               <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
 
                 <AnalysisForm />
@@ -85,10 +85,20 @@ export default function Dashboard() {
                   <EmergencyFundCard />
 
                 </div>
-                <AIInsights />
-                <ChartsSection />
-                <InvestmentPlanner />
-                <RecentAnalysis />
+                <div id="advisor" className="mt-8">
+                    <AIInsights />
+                  </div>
+                
+                        <div id="reports" className="mt-8">
+                          <ChartsSection />
+                        </div>
+
+                      <div id="planner" className="mt-8">
+                        <InvestmentPlanner />
+                      </div>
+                <div id="history" className="mt-8">
+                        <RecentAnalysis />
+                      </div>
 
               </div>
             </div>
