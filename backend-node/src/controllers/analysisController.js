@@ -11,17 +11,15 @@ export const analyzeFinance = async (req, res) => {
 
     console.log("Finance Calculated");
 
-    const aiRecommendation =
-      await getRecommendation(finance);
+   const aiRecommendation =
+  await getRecommendation(finance);
 
-    const analysis = await Analysis.create({
-      ...req.body,
+const analysis = await Analysis.create({
+  ...req.body,
+  ...finance,
 
-      ...finance,
-
-      aiRecommendation,
-    });
-
+  aiRecommendation,
+});
     console.log("Analysis Saved Successfully");
 
     return res.status(201).json(analysis);

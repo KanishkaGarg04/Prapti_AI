@@ -77,11 +77,6 @@ const analysisSchema = new mongoose.Schema(
       gold: Number,
       cash: Number,
     },
-
-    recommendations: {
-  type: [recommendationSchema],
-  default: [],
-},
 market: {
   nifty: {
     price: Number,

@@ -105,6 +105,7 @@ export async function calculateFinance(data) {
       risk: data.investment,
       goal: data.goal,
     });
+    console.log(investmentPlan);
 
   // ===============================
   // Market Snapshot
