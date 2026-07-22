@@ -70,7 +70,7 @@ export default function Dashboard() {
             </div>
 
          
-            <div id = "analysis" className="flex-1 overflow-y-auto bg-slate-50">
+            <div id = "analysis">
               <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
 
                 <AnalysisForm />
@@ -89,7 +89,7 @@ export default function Dashboard() {
                     <AIInsights />
                   </div>
                 
-                        <div id="reports" className="mt-8">
+                        <div id="charts" className="mt-8">
                           <ChartsSection />
                         </div>
 

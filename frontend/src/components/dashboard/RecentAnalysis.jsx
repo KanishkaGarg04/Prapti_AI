@@ -7,6 +7,7 @@ import {
   Search,
   Eye,
   Download,
+  Mail,
   ArrowUpRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -14,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useAnalysis } from "../../context/AnalysisContext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
+import api from "../../services/api";
 
 export default function RecentAnalysis() {
   const navigate = useNavigate();
@@ -252,10 +253,29 @@ async function downloadReport(item) {
                   </button>
 
                     <button
-                      className="rounded-lg bg-blue-600 p-2 text-white transition hover:bg-blue-700"
-                    >
-                      <ArrowUpRight size={16} />
-                    </button>
+                        onClick={async () => {
+                          const email = prompt("Enter recipient email");
+
+                          if (!email) return;
+
+                          try {
+                            await api.post("/analysis/email", {
+                              email,
+                              report: item,
+                            });
+
+                            alert("✅ Report sent successfully!");
+                          } catch (err) {
+                            console.error(err);
+
+                            alert("❌ Failed to send email.");
+                          }
+                        }}
+                        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-700 transition hover:border-violet-500 hover:text-violet-600"
+                      >
+                        <Mail size={15} />
+                        Email
+                      </button>
 
                   </div>
 

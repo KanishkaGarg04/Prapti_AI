@@ -7,6 +7,8 @@ import {
   History,
   Settings,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 const menu = [
   {
@@ -31,17 +33,18 @@ const menu = [
   },
   {
     icon: FileText,
-    name: "Reports",
-    target: "reports",
+    name: "Financial Charts",
+    target: "charts",
   },
   {
     icon: History,
-    name: "Analysis History",
+    name: "Recent Analysis",
     target: "history",
   },
 ];
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const scrollToSection = (id) => {
     if (id === "top") {
       window.scrollTo({
@@ -69,7 +72,7 @@ export default function Sidebar() {
           "Inter, system-ui, -apple-system, sans-serif",
       }}
     >
-      {/* Logo */}
+  
 
       <div className="border-b border-slate-200 px-8 py-8">
 
@@ -82,8 +85,6 @@ export default function Sidebar() {
         </p>
 
       </div>
-
-      {/* Navigation */}
 
       <nav className="flex-1 px-4 py-6">
 
@@ -127,11 +128,10 @@ export default function Sidebar() {
 
       </nav>
 
-      {/* Settings */}
 
       <div className="border-t border-slate-200 p-4">
 
-        <button
+        <button onClick={() => navigate("/settings")}
           className="
             w-full
             flex
