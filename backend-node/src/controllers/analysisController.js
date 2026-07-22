@@ -1,6 +1,7 @@
 import Analysis from "../models/Analysis.js";
 import { calculateFinance } from "../services/financialService.js";
 import { getRecommendation } from "../services/llmService.js";
+import { sendReportEmail } from "../services/mailService.js";
 
 export const analyzeFinance = async (req, res) => {
   try {
@@ -56,6 +57,31 @@ export const getHistory = async (req, res) => {
 
   }
 
+};
+export const sendEmailReport = async (req, res) => {
+  try {
+    const { email, report } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+      });
+    }
+
+    await sendReportEmail(email, report);
+
+    return res.json({
+      success: true,
+      message: "Report emailed successfully",
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
 };
 
 export const getAnalysis = async (req,res)=>{
