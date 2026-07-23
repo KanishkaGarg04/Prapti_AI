@@ -54,7 +54,11 @@ const analysisSchema = new mongoose.Schema(
         value: Number,
       },
     ],
-
+     user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     emiDistribution: [
       {
         name: String,

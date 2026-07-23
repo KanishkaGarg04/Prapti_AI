@@ -1,17 +1,22 @@
 import express from "express";
-
 import {
   analyzeFinance,
   getHistory,
   sendEmailReport,
+  getAnalysis,
 } from "../controllers/analysisController.js";
+
+import { protect } from "../middlewares/protect.js";
 
 const router = express.Router();
 
-router.post("/", analyzeFinance);
+// Protected Routes
+router.post("/", protect, analyzeFinance);
 
-router.get("/history", getHistory);
+router.get("/history", protect, getHistory);
 
-router.post("/email", sendEmailReport);
+router.post("/email", protect, sendEmailReport);
+
+router.get("/:id", protect, getAnalysis);
 
 export default router;

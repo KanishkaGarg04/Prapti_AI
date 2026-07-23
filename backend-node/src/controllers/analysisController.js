@@ -16,7 +16,10 @@ export const analyzeFinance = async (req, res) => {
   await getRecommendation(finance);
 
 const analysis = await Analysis.create({
+  user: req.user._id,
+
   ...req.body,
+
   ...finance,
 
   aiRecommendation,
@@ -41,9 +44,11 @@ export const getHistory = async (req, res) => {
 
   try {
 
-    const history = await Analysis.find().sort({
-      createdAt:-1,
-    });
+   const history = await Analysis.find({
+  user: req.user._id,
+}).sort({
+  createdAt: -1,
+});
 
     return res.json(history);
 
@@ -88,8 +93,10 @@ export const getAnalysis = async (req,res)=>{
 
   try{
 
-    const analysis =
-      await Analysis.findById(req.params.id);
+   const analysis = await Analysis.findOne({
+  _id: req.params.id,
+  user: req.user._id,
+});
 
     if(!analysis){
 

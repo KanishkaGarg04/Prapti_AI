@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { connectDB } from "./config/db.js";
 import analysisRoutes from "./routes/analysisRoutes.js";
 import marketRoutes from "./routes/marketRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
     message: "Prapti AI Backend Running 🚀",
   });
 });
+app.use("/api/auth", authRoutes);
 
 app.use("/api/analysis", analysisRoutes);
 
