@@ -7,7 +7,6 @@ import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
-
   const navigate = useNavigate();
 
   const { login } = useAuth();
@@ -19,19 +18,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
       const res = await api.post("/auth/login", {
-
         email,
-
         password,
-
       });
 
       login(res.data);
@@ -39,59 +33,35 @@ export default function Login() {
       toast.success("Welcome Back!");
 
       navigate("/");
-
-    }
-
-    catch (err) {
-
+    } catch (err) {
       toast.error(
-
         err.response?.data?.message ||
-
-        "Login Failed"
-
+          "Login Failed"
       );
-
-    }
-
-    finally {
-
+    } finally {
       setLoading(false);
-
     }
-
   };
 
   return (
-
-    <div className="min-h-screen bg-[#f8fafc]">
-
+    <div className="min-h-screen bg-[#f8fafc] overflow-x-hidden">
       <div className="grid min-h-screen lg:grid-cols-2">
 
-        
-
-        <div className="relative flex flex-col justify-center overflow-hidden border-r border-gray-200 px-20">
-
-          
+        {/* LEFT SIDE */}
+        <div className="relative hidden lg:flex flex-col justify-center overflow-hidden border-r border-gray-200 px-12 xl:px-20">
 
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
 
             <h1 className="absolute -left-10 top-10 text-[140px] font-black text-gray-100 uppercase">
-
               PRAPTI
-
             </h1>
 
             <h1 className="absolute left-20 top-56 text-[120px] font-black text-gray-100 uppercase">
-
               AI
-
             </h1>
 
             <h1 className="absolute -left-8 bottom-10 text-[120px] font-black text-gray-100 uppercase">
-
               FINANCE
-
             </h1>
 
           </div>
@@ -99,61 +69,41 @@ export default function Login() {
           <div className="relative z-10">
 
             <p className="tracking-[0.45em] uppercase text-xs text-blue-600 font-semibold">
-
               Financial Intelligence Platform
-
             </p>
 
             <h1 className="mt-8 text-7xl leading-none font-serif">
-
               BUILD
-
             </h1>
 
             <h1 className="text-7xl leading-none font-serif">
-
               WEALTH.
-
             </h1>
 
             <h1 className="mt-8 text-7xl leading-none font-serif">
-
               ELIMINATE
-
             </h1>
 
             <h1 className="text-7xl leading-none font-serif">
-
               DEBT.
-
             </h1>
 
             <p className="mt-12 max-w-xl text-gray-500 leading-8">
-
-              Prapti AI empowers individuals with
-              AI-driven financial planning,
-              intelligent loan optimization,
-              investment insights,
-              and long-term wealth management.
-
+              Prapti AI empowers individuals with AI-driven financial planning,
+              intelligent loan optimization, investment insights, and long-term
+              wealth management.
             </p>
 
             <div className="mt-16 border-l-2 border-blue-600 pl-6">
 
               <p className="text-sm uppercase tracking-[0.25em] text-gray-500">
-
                 Trusted Financial Intelligence
-
               </p>
 
               <h3 className="mt-3 text-2xl font-semibold">
-
                 Smarter Decisions.
-
                 <br />
-
                 Better Future.
-
               </h3>
 
             </div>
@@ -162,239 +112,190 @@ export default function Login() {
 
         </div>
 
-
-        <div className="flex items-center justify-center px-10">
+        {/* RIGHT SIDE */}
+        <div className="flex items-center justify-center px-5 sm:px-8 lg:px-10 py-10">
 
           <motion.div
-
             initial={{ opacity: 0, x: 40 }}
-
             animate={{ opacity: 1, x: 0 }}
-
-            transition={{ duration: .6 }}
-
-            className="w-full max-w-md border border-gray-300 bg-white p-12"
-
+            transition={{ duration: 0.6 }}
+            className="
+              w-full
+              max-w-md
+              rounded-2xl
+              lg:rounded-none
+              border
+              border-gray-300
+              bg-white
+              p-6
+              sm:p-8
+              lg:p-12
+              shadow-sm
+            "
           >
 
             <p className="text-xs tracking-[0.35em] uppercase text-blue-600">
-
               Login
-
             </p>
 
-            <h2 className="mt-5 text-4xl font-serif">
-
+            <h2 className="mt-4 text-3xl sm:text-4xl font-serif">
               Welcome Back
-
             </h2>
 
-            <p className="mt-4 text-gray-500 leading-7">
-
-              Continue your financial journey
-              with AI-powered insights,
-              wealth planning,
-              and debt optimization.
-
+            <p className="mt-3 text-sm sm:text-base text-gray-500 leading-7">
+              Continue your financial journey with AI-powered insights,
+              wealth planning, and debt optimization.
             </p>
+                        <form
+              onSubmit={handleSubmit}
+              className="mt-8 sm:mt-10 space-y-7"
+            >
+              {/* Email */}
+              <div>
+                <label className="text-xs uppercase tracking-[0.25em] text-gray-500">
+                  Email Address
+                </label>
 
-            <form
-  onSubmit={handleSubmit}
-  className="mt-12 space-y-8"
->
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="
+                    mt-3
+                    w-full
+                    border-0
+                    border-b-2
+                    border-gray-300
+                    bg-transparent
+                    px-0
+                    py-3
+                    sm:py-4
+                    text-base
+                    sm:text-lg
+                    outline-none
+                    transition
+                    focus:border-blue-600
+                  "
+                />
+              </div>
 
-  {/* Email */}
+              {/* Password */}
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs uppercase tracking-[0.25em] text-gray-500">
+                    Password
+                  </label>
 
-  <div>
+                  <button
+                    type="button"
+                    className="text-xs sm:text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
 
-    <label className="text-xs uppercase tracking-[0.25em] text-gray-500">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="
+                    mt-3
+                    w-full
+                    border-0
+                    border-b-2
+                    border-gray-300
+                    bg-transparent
+                    px-0
+                    py-3
+                    sm:py-4
+                    text-base
+                    sm:text-lg
+                    outline-none
+                    transition
+                    focus:border-blue-600
+                  "
+                />
+              </div>
 
-      Email Address
+              {/* Login Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="
+                  mt-2
+                  w-full
+                  rounded-xl
+                  lg:rounded-none
+                  border
+                  border-blue-600
+                  bg-blue-600
+                  py-3.5
+                  sm:py-4
+                  text-xs
+                  sm:text-sm
+                  uppercase
+                  tracking-[0.35em]
+                  text-white
+                  transition
+                  hover:bg-slate-900
+                  hover:border-slate-900
+                  disabled:opacity-60
+                "
+              >
+                {loading ? "Signing In..." : "Continue →"}
+              </button>
+            </form>
 
-    </label>
+            {/* Divider */}
+            <div className="my-8 sm:my-12 flex items-center">
+              <div className="h-px flex-1 bg-gray-200"></div>
 
-    <input
+              <span className="px-4 text-xs uppercase tracking-[0.3em] text-gray-400">
+                OR
+              </span>
 
-      type="email"
+              <div className="h-px flex-1 bg-gray-200"></div>
+            </div>
 
-      value={email}
+            {/* Signup */}
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                New to Prapti AI?
+              </p>
 
-      onChange={(e)=>setEmail(e.target.value)}
+              <Link
+                to="/signup"
+                className="
+                  mt-4
+                  inline-block
+                  rounded-xl
+                  lg:rounded-none
+                  border
+                  border-gray-300
+                  px-8
+                  sm:px-10
+                  py-3
+                  text-xs
+                  sm:text-sm
+                  uppercase
+                  tracking-[0.35em]
+                  transition
+                  hover:border-blue-600
+                  hover:text-blue-600
+                "
+              >
+                Create Account
+              </Link>
+            </div>
 
-      placeholder="you@example.com"
+          </motion.div>
+        </div>
 
-      required
-
-      className="
-        mt-3
-        w-full
-        border-0
-        border-b-2
-        border-gray-300
-        bg-transparent
-        px-0
-        py-4
-        text-lg
-        outline-none
-        transition
-        focus:border-blue-600
-      "
-
-    />
-
-  </div>
-
-  {/* Password */}
-
-  <div>
-
-    <div className="flex items-center justify-between">
-
-      <label className="text-xs uppercase tracking-[0.25em] text-gray-500">
-
-        Password
-
-      </label>
-
-      <button
-
-        type="button"
-
-        className="text-sm text-blue-600 hover:text-blue-700"
-
-      >
-
-        Forgot Password?
-
-      </button>
-
+      </div>
     </div>
-
-    <input
-
-      type="password"
-
-      value={password}
-
-      onChange={(e)=>setPassword(e.target.value)}
-
-      placeholder="••••••••"
-
-      required
-
-      className="
-        mt-3
-        w-full
-        border-0
-        border-b-2
-        border-gray-300
-        bg-transparent
-        px-0
-        py-4
-        text-lg
-        outline-none
-        transition
-        focus:border-blue-600
-      "
-
-    />
-
-  </div>
-
-  {/* Login Button */}
-
-  <button
-
-    type="submit"
-
-    disabled={loading}
-
-    className="
-      mt-4
-      w-full
-      border
-      border-blue-600
-      bg-blue-600
-      py-4
-      text-sm
-      uppercase
-      tracking-[0.35em]
-      text-white
-      transition
-      hover:bg-slate-900
-      hover:border-slate-900
-      disabled:opacity-60
-    "
-
-  >
-
-    {loading ? "Signing In..." : "Continue →"}
-
-  </button>
-
-</form>
-
-{/* Divider */}
-
-<div className="my-12 flex items-center">
-
-  <div className="h-px flex-1 bg-gray-200"></div>
-
-  <span className="px-4 text-xs uppercase tracking-[0.3em] text-gray-400">
-
-    OR
-
-  </span>
-
-  <div className="h-px flex-1 bg-gray-200"></div>
-
-</div>
-
-{/* Signup */}
-
-<div className="text-center">
-
-  <p className="text-gray-500">
-
-    New to Prapti AI?
-
-  </p>
-
-  <Link
-
-    to="/signup"
-
-    className="
-      mt-4
-      inline-block
-      border
-      border-gray-300
-      px-10
-      py-3
-      text-sm
-      uppercase
-      tracking-[0.35em]
-      transition
-      hover:border-blue-600
-      hover:text-blue-600
-    "
-
-  >
-
-    Create Account
-
-  </Link>
-
-</div>
-
-</motion.div>
-
-</div>
-
-</div>
-
-</div>
-
-);
-
+  );
 }

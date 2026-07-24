@@ -43,28 +43,86 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="bg-white border-t border-gray-200">
-      <div className="mx-auto max-w-7xl px-6 py-24">
+    <section
+      id="features"
+      className="border-t border-gray-200 bg-white"
+    >
+      <div
+        className="
+          mx-auto
+          max-w-7xl
+          px-5
+          py-14
 
-        <div className="text-center mb-16">
+          sm:px-6
+          sm:py-16
 
-          <p className="text-xs uppercase tracking-[0.3em] text-blue-600">
+          lg:px-8
+          lg:py-24
+        "
+      >
+        {/* Heading */}
+
+        <div className="mx-auto mb-14 max-w-3xl text-center">
+
+          <p
+            className="
+              text-[11px]
+              uppercase
+              tracking-[0.3em]
+              text-blue-600
+            "
+          >
             Platform Capabilities
           </p>
 
-          <h2 className="mt-4 text-4xl font-semibold text-gray-900">
+          <h2
+            className="
+              mt-4
+              text-3xl
+              font-semibold
+              leading-tight
+              text-gray-900
+
+              sm:text-4xl
+
+              lg:text-5xl
+            "
+          >
             Everything needed to understand your finances.
           </h2>
 
-          <p className="mt-5 text-gray-600 max-w-2xl mx-auto">
-            Prapti AI combines financial calculations, predictive analytics,
-            investment projections and AI assistance into one platform.
+          <p
+            className="
+              mt-6
+              text-base
+              leading-8
+              text-gray-600
+
+              lg:text-lg
+            "
+          >
+            Prapti AI combines financial calculations,
+            predictive analytics, investment projections,
+            and AI-powered guidance into one intelligent
+            financial platform.
           </p>
 
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Cards */}
 
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-6
+
+            sm:grid-cols-2
+
+            xl:grid-cols-3
+          "
+        >
           {features.map((feature, index) => {
 
             const Icon = feature.icon;
@@ -72,46 +130,79 @@ export default function Features() {
             return (
 
               <motion.div
-
                 key={feature.title}
-
-                initial={{ opacity: 0, y: 20 }}
-
-                whileInView={{ opacity: 1, y: 0 }}
-
+                initial={{
+                  opacity: 0,
+                  y: 25,
+                }}
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                }}
                 viewport={{ once: true }}
-
-                transition={{ delay: index * 0.08 }}
-
+                transition={{
+                  delay: index * 0.08,
+                  duration: 0.45,
+                }}
                 className="
-                border
-                border-gray-200
-                bg-white
-                p-7
-                hover:border-blue-300
-                hover:shadow-lg
-                transition-all
-                duration-300
-                "
+                  border
+                  border-gray-200
+                  bg-white
+                  p-6
+                  shadow-sm
+                  transition-all
+                  duration-300
 
+                  hover:-translate-y-1
+                  hover:border-blue-300
+                  hover:shadow-xl
+
+                  sm:p-7
+                "
               >
 
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center bg-blue-50">
+                <div
+                  className="
+                    mb-6
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    border
+                    border-blue-100
+                    bg-blue-50
+                  "
+                >
 
-                  <Icon size={22} className="text-blue-600"/>
+                  <Icon
+                    size={24}
+                    className="text-blue-600"
+                  />
 
                 </div>
 
-                <h3 className="text-lg font-semibold">
-
+                <h3
+                  className="
+                    text-xl
+                    font-semibold
+                    text-gray-900
+                  "
+                >
                   {feature.title}
-
                 </h3>
 
-                <p className="mt-4 text-sm leading-7 text-gray-600">
+                <p
+                  className="
+                    mt-4
+                    text-sm
+                    leading-7
+                    text-gray-600
 
+                    sm:text-base
+                  "
+                >
                   {feature.desc}
-
                 </p>
 
               </motion.div>
@@ -119,7 +210,6 @@ export default function Features() {
             );
 
           })}
-
         </div>
 
       </div>

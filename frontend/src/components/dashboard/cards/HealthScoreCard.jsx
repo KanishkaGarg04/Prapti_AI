@@ -41,31 +41,31 @@ export default function HealthScoreCard() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="bg-white rounded-xl border border-slate-200/90 shadow-sm col-span-1 lg:col-span-2 overflow-hidden flex flex-col justify-between"
+      className="bg-white rounded-xl border border-slate-200/90 shadow-sm col-span-1 lg:col-span-2 overflow-hidden flex flex-col justify-between w-full max-w-full"
       style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
     >
       {/* Zerodha-style thin brand accent bar (Dynamic based on health score) */}
       <div className={`h-1 w-full ${barColor}`} />
 
-      <div className="p-6 md:p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-slate-500">
                 Financial Health Score
               </span>
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 border ${colorClass}`}>
+              <span className={`text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 border ${colorClass}`}>
                 {status} Status
               </span>
             </div>
-            <div className={`text-3xl md:text-4xl font-bold tracking-tight mt-1 ${textColor}`}>
-              {score} <span className="text-lg font-medium text-slate-400">/ 100</span>
+            <div className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mt-1 ${textColor} truncate`}>
+              {score} <span className="text-base sm:text-lg font-medium text-slate-400">/ 100</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 px-4 py-2.5 rounded-lg">
-            <div className={`p-2 rounded-md ${colorClass}`}>
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 px-4 py-2.5 rounded-lg self-start sm:self-auto w-full sm:w-auto">
+            <div className={`p-2 rounded-md shrink-0 ${colorClass}`}>
               <HeartPulse size={20} />
             </div>
             <div>
@@ -76,11 +76,11 @@ export default function HealthScoreCard() {
         </div>
 
         {/* Data Grid / Metrics (Zerodha Console Style) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 pt-6 items-center">
           {/* Metric 1 */}
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Debt Ratio Impact</p>
-            <p className="text-xl font-bold text-slate-900 mt-1">
+            <p className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
               {analysis.debtRatio?.toFixed(1)}%
             </p>
             <p className="text-[11px] text-slate-500 mt-1">Leverage weighting factored</p>
@@ -89,17 +89,17 @@ export default function HealthScoreCard() {
           {/* Metric 2 */}
           <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Savings Rate Impact</p>
-            <p className="text-xl font-bold text-slate-900 mt-1">
+            <p className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
               {analysis.savingsRate?.toFixed(1)}%
             </p>
             <p className="text-[11px] text-blue-600 font-medium mt-1">Surplus weighting factored</p>
           </div>
 
           {/* Metric 3 / Progress Bar area */}
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center sm:col-span-2 md:col-span-1 bg-slate-50/70 sm:bg-transparent border sm:border-0 border-slate-200/60 rounded-lg p-4 sm:p-0">
             <div className="flex justify-between items-center text-xs font-medium text-slate-600 mb-1.5">
               <span className="flex items-center gap-1">
-                <Activity size={14} className={textColor} /> Health Index
+                <Activity size={14} className={`${textColor} shrink-0`} /> Health Index
               </span>
               <span className="font-bold text-slate-900">{score}%</span>
             </div>

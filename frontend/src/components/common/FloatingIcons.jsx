@@ -30,8 +30,9 @@ export default function FloatingIcons() {
           transition={{
             duration: 8 + i,
             repeat: Infinity,
+            ease: "easeInOut",
           }}
-          className="absolute"
+          className="absolute pointer-events-none hidden sm:block"
           style={{
             left: `${15 + i * 20}%`,
             top: `${20 + i * 15}%`,

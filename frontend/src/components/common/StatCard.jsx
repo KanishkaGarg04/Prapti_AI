@@ -7,38 +7,105 @@ export default function StatCard({
   positive = true,
 }) {
   return (
-    <div className="
-      bg-white
-      border
-      border-gray-200
-      shadow-sm
-      transition-all
-      duration-300
-      hover:border-blue-300
-      hover:shadow-lg
-      hover:-translate-y-1
-      ">
+    <div
+      className="
+        flex
+        h-full
+        flex-col
+        justify-between
+        border
+        border-gray-200
+        bg-white
+        p-5
+        shadow-sm
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-blue-300
+        hover:shadow-xl
 
-      <div className="flex items-center justify-between">
+        sm:p-6
+        lg:p-7
+      "
+    >
+      {/* Top */}
 
-        <p className="text-[11px] uppercase tracking-widest text-gray-500">
+      <div className="flex items-start justify-between gap-4">
+
+        <p
+          className="
+            text-[10px]
+            font-medium
+            uppercase
+            tracking-[0.25em]
+            text-gray-500
+
+            sm:text-[11px]
+          "
+        >
           {title}
         </p>
 
-        <ArrowUpRight
-          size={14}
-          className={positive ? "text-green-600" : "text-red-600"}
-        />
+        <div
+          className={`
+            flex
+            h-9
+            w-9
+            items-center
+            justify-center
+            border
+            ${
+              positive
+                ? "border-green-200 bg-green-50"
+                : "border-red-200 bg-red-50"
+            }
+          `}
+        >
+          <ArrowUpRight
+            size={18}
+            className={
+              positive
+                ? "text-green-600"
+                : "text-red-600"
+            }
+          />
+        </div>
 
       </div>
 
-      <h3 className="mt-4 text-2xl font-semibold text-gray-900">
-        {value}
-      </h3>
+      {/* Value */}
 
-      <p className="mt-2 text-xs text-gray-500">
-        {subtitle}
-      </p>
+      <div className="mt-6">
+
+        <h3
+          className="
+            break-words
+            text-2xl
+            font-semibold
+            leading-tight
+            text-gray-900
+
+            sm:text-3xl
+            lg:text-4xl
+          "
+        >
+          {value}
+        </h3>
+
+        <p
+          className="
+            mt-3
+            text-sm
+            leading-6
+            text-gray-500
+
+            sm:text-base
+          "
+        >
+          {subtitle}
+        </p>
+
+      </div>
 
     </div>
   );

@@ -10,9 +10,9 @@ export default function InputForm({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#0b0f19] border border-zinc-800 rounded-3xl p-6 shadow-2xl max-w-2xl mx-auto"
+      className="bg-[#0b0f19] border border-zinc-800 rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl max-w-2xl mx-auto w-full overflow-x-hidden"
     >
-      <h2 className="text-2xl font-black text-white tracking-tighter mb-6 text-center">
+      <h2 className="text-xl sm:text-2xl font-black text-white tracking-tighter mb-6 text-center">
         LOAN ANALYSIS
       </h2>
 
@@ -28,12 +28,12 @@ export default function InputForm({
             value={formData.loan_amount} 
             onChange={handleInputChange}
             placeholder="50,00,000"
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-lg font-semibold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-all"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-base sm:text-lg font-semibold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-all"
           />
         </div>
 
         {/* Interest Rate & Tenure */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">
               Interest Rate (% p.a.)
@@ -44,7 +44,7 @@ export default function InputForm({
               name="interest_rate" 
               value={formData.interest_rate} 
               onChange={handleInputChange}
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-emerald-500 transition-all"
+              className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-base sm:text-lg font-semibold text-white focus:outline-none focus:border-emerald-500 transition-all"
             />
           </div>
 
@@ -79,7 +79,7 @@ export default function InputForm({
             name="monthly_income" 
             value={formData.monthly_income} 
             onChange={handleInputChange}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-emerald-500 transition-all"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-base sm:text-lg font-semibold text-white focus:outline-none focus:border-emerald-500 transition-all"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function InputForm({
             name="existing_emis" 
             value={formData.existing_emis} 
             onChange={handleInputChange}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-emerald-500 transition-all"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-base sm:text-lg font-semibold text-white focus:outline-none focus:border-emerald-500 transition-all"
           />
         </div>
 
@@ -106,7 +106,7 @@ export default function InputForm({
             name="job_type" 
             value={formData.job_type} 
             onChange={handleInputChange}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-base font-semibold focus:outline-none focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm sm:text-base font-semibold text-white focus:outline-none focus:border-emerald-500 transition-all appearance-none cursor-pointer"
           >
             <option value="govt">Government / Public Sector</option>
             <option value="private">Private Corporate</option>
@@ -122,7 +122,7 @@ export default function InputForm({
             whileTap={{ scale: 0.98 }}
             onClick={calculateRisk}
             disabled={loading}
-            className="flex-1 bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl font-bold text-xs uppercase tracking-wide text-white shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-70"
+            className="flex-1 bg-emerald-500 hover:bg-emerald-600 py-3 rounded-xl font-bold text-xs uppercase tracking-wide text-white shadow-lg shadow-emerald-500/35 transition-all disabled:opacity-70 active:scale-[0.98]"
           >
             {loading ? "ANALYZING..." : "RUN ANALYSIS"}
           </motion.button>
@@ -132,7 +132,7 @@ export default function InputForm({
             whileTap={{ scale: 0.98 }}
             onClick={calculateRisk}
             disabled={loading}
-            className="flex-1 border border-zinc-700 hover:border-zinc-400 py-3 rounded-xl font-bold text-xs uppercase tracking-wide text-zinc-300 transition-all disabled:opacity-70"
+            className="flex-1 border border-zinc-700 hover:border-zinc-400 py-3 rounded-xl font-bold text-xs uppercase tracking-wide text-zinc-300 transition-all disabled:opacity-70 active:scale-[0.98]"
           >
             COMPARE
           </motion.button>

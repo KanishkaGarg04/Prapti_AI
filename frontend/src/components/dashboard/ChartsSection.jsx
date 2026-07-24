@@ -59,24 +59,25 @@ export default function ChartsSection() {
     ];
 
   return (
-    <div className="mt-8 space-y-8">
+    <div className="mt-8 space-y-6 sm:space-y-8 w-full max-w-full overflow-hidden">
 
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
+        className="w-full"
       >
 
-        <div className="rounded-2xl border bg-white shadow-sm">
+        <div className="rounded-2xl border bg-white shadow-sm overflow-hidden w-full">
 
-          <div className="border-b p-6">
-            <h2 className="text-2xl font-bold">
+          <div className="border-b p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold truncate">
               Investment Growth Projection
             </h2>
           </div>
 
-          <div className="h-96 p-6">
+          <div className="h-72 sm:h-96 p-2 sm:p-6 w-full">
 
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%">
 
               <AreaChart data={growthData}>
 
@@ -108,9 +109,9 @@ export default function ChartsSection() {
 
                 <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis dataKey="year" />
+                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
 
-                <YAxis />
+                <YAxis tick={{ fontSize: 12 }} width={60} />
 
                 <Tooltip />
 
@@ -131,21 +132,21 @@ export default function ChartsSection() {
 
       </motion.div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-2 w-full">
 
-        <div className="rounded-2xl border bg-white shadow-sm">
+        <div className="rounded-2xl border bg-white shadow-sm overflow-hidden w-full">
 
-          <div className="border-b p-6">
+          <div className="border-b p-4 sm:p-6">
 
-            <h2 className="text-xl font-bold">
+            <h2 className="text-lg sm:text-xl font-bold truncate">
               EMI Distribution
             </h2>
 
           </div>
 
-          <div className="h-80">
+          <div className="h-72 sm:h-80 p-2 sm:p-4 w-full">
 
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%">
 
               <PieChart>
 
@@ -153,8 +154,8 @@ export default function ChartsSection() {
                   data={emiData}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={70}
-                  outerRadius={110}
+                  innerRadius={60}
+                  outerRadius={95}
                 >
 
                   {emiData.map((item, index) => (
@@ -176,27 +177,27 @@ export default function ChartsSection() {
 
         </div>
 
-        <div className="rounded-2xl border bg-white shadow-sm">
+        <div className="rounded-2xl border bg-white shadow-sm overflow-hidden w-full">
 
-          <div className="border-b p-6">
+          <div className="border-b p-4 sm:p-6">
 
-            <h2 className="text-xl font-bold">
+            <h2 className="text-lg sm:text-xl font-bold truncate">
               Monthly Cashflow
             </h2>
 
           </div>
 
-          <div className="h-80 p-6">
+          <div className="h-72 sm:h-80 p-2 sm:p-6 w-full">
 
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%">
 
               <BarChart data={cashflow}>
 
                 <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis dataKey="month" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
 
-                <YAxis />
+                <YAxis tick={{ fontSize: 12 }} width={60} />
 
                 <Tooltip />
 

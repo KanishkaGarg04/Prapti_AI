@@ -34,76 +34,101 @@ export default function DebtRatioCard() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="bg-white rounded-xl border border-slate-200/90 shadow-sm col-span-1 lg:col-span-2 overflow-hidden flex flex-col justify-between"
-      style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col col-span-1 lg:col-span-2"
+      style={{ fontFamily: "Inter, system-ui, -apple-system, sans-serif" }}
     >
-      <div className={`h-1 w-full ${ratio < 30 ? 'bg-emerald-600' : ratio < 50 ? 'bg-amber-500' : 'bg-rose-600'}`} />
+      {/* Top Accent Bar */}
+      <div className={`h-1.5 w-full ${barColor}`} />
 
-      <div className="p-4 ">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
-                Debt-to-Income Ratio
+      <div className="p-5 md:p-8 flex flex-col h-full">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 pb-6 border-b border-slate-100">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-semibold tracking-widest uppercase text-slate-500">
+                DEBT-TO-INCOME RATIO
               </span>
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 border ${colorClass}`}>
-                {ratio < 35 ? <TrendingDown size={12} /> : <AlertTriangle size={12} />} 
-                {ratio < 35 ? 'Healthy Range' : 'High Leverage'}
+              <span
+                className={`inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1 rounded-xl border ${colorClass}`}
+              >
+                {ratio < 35 ? (
+                  <TrendingDown size={13} />
+                ) : (
+                  <AlertTriangle size={13} />
+                )}
+                {ratio < 35 ? "Healthy" : "High Leverage"}
               </span>
             </div>
-            <div className={`text-3xl md:text-4xl font-bold tracking-tight mt-1 ${textColor}`}>
+
+            <div className={`text-4xl md:text-5xl font-bold tracking-tighter mt-2 ${textColor}`}>
               {ratio.toFixed(1)}%
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 px-4 py-2.5 rounded-lg">
-            <div className={`p-2 rounded-md ${colorClass}`}>
-              <CreditCard size={20} />
+          {/* Benchmark Card */}
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 min-w-[180px] flex-shrink-0">
+            <div className={`inline-flex p-2 rounded-xl ${colorClass} mb-3`}>
+              <CreditCard size={22} />
             </div>
-            <div>
-              <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">Target Benchmark</p>
-              <p className="text-xs font-bold text-slate-800">Recommended &lt; 35%</p>
-            </div>
+            <p className="text-xs font-medium text-slate-500">TARGET BENCHMARK</p>
+            <p className="text-lg font-semibold text-slate-800 mt-1">
+              Below <span className="text-emerald-600">35%</span>
+            </p>
           </div>
         </div>
 
-        {/* Data Grid / Metrics (Zerodha Console Style) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 items-center">
-          {/* Metric 1 */}
-          <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Current Ratio</p>
-            <p className={`text-xl font-bold mt-1 ${textColor}`}>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-7 flex-1">
+          {/* Current Ratio */}
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+            <p className="text-xs font-medium uppercase tracking-widest text-slate-500">
+              Current Ratio
+            </p>
+            <p className={`text-3xl font-bold mt-2 ${textColor}`}>
               {ratio.toFixed(1)}%
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">Total debt relative to income</p>
-          </div>
-
-          {/* Metric 2 */}
-          <div className="bg-slate-50/70 border border-slate-200/60 rounded-lg p-4">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Safety Threshold</p>
-            <p className="text-xl font-bold text-slate-900 mt-1">
-              35.0% <span className="text-sm font-normal text-slate-600">Max</span>
+            <p className="text-sm text-slate-500 mt-2 leading-snug">
+              Total debt relative to monthly income
             </p>
-            <p className="text-[11px] text-blue-600 font-medium mt-1">Industry standard limit</p>
           </div>
 
-          {/* Metric 3 / Progress Bar area */}
-          <div className="flex flex-col justify-center">
-            <div className="flex justify-between items-center text-xs font-medium text-slate-600 mb-1.5">
-              <span className="flex items-center gap-1">
-                <CreditCard size={14} className={textColor} /> Leverage Load
+          {/* Safety Threshold */}
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+            <p className="text-xs font-medium uppercase tracking-widest text-slate-500">
+              Safety Threshold
+            </p>
+            <p className="text-3xl font-bold text-slate-900 mt-2">
+              35.0%
+              <span className="text-sm font-normal text-slate-500 ml-1">max</span>
+            </p>
+            <p className="text-sm text-blue-600 font-medium mt-2">
+              Industry standard limit
+            </p>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="lg:col-span-1 flex flex-col justify-center bg-slate-50 border border-slate-100 rounded-2xl p-5">
+            <div className="flex justify-between text-xs mb-2 font-medium text-slate-600">
+              <span className="flex items-center gap-1.5">
+                <CreditCard size={15} className={textColor} />
+                Leverage Load
               </span>
               <span className="font-bold text-slate-900">{ratio.toFixed(1)}%</span>
             </div>
-            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-              <div 
-                className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
-                style={{ width: `${Math.min(ratio, 100)}%` }}
+
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full rounded-full ${barColor}`}
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(ratio, 100)}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-2">Lower ratio signifies better liquidity.</p>
+
+            <p className="text-xs text-slate-500 mt-3">
+              Lower ratio = Better financial health
+            </p>
           </div>
         </div>
       </div>

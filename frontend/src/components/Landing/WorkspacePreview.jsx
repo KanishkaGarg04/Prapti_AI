@@ -41,37 +41,113 @@ const cards = [
 
 export default function WorkspacePreview() {
   return (
-    <section className="bg-slate-50 border-y border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 py-24">
+    <section className="border-y border-gray-200 bg-slate-50">
+
+      <div
+        className="
+          mx-auto
+          max-w-7xl
+          px-5
+          py-14
+
+          sm:px-6
+          sm:py-16
+
+          lg:px-8
+          lg:py-24
+        "
+      >
 
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
         >
-          <p className="text-xs uppercase tracking-[0.3em] text-blue-600">
+
+          <p className="text-[11px] uppercase tracking-[0.3em] text-blue-600">
+
             Financial Workspace
+
           </p>
 
-          <h2 className="mt-4 text-4xl font-semibold">
+          <h2
+            className="
+              mt-4
+              text-3xl
+              font-semibold
+              leading-tight
+
+              sm:text-4xl
+
+              lg:text-5xl
+            "
+          >
+
             Understand every financial decision visually.
+
           </h2>
 
-          <p className="mt-5 max-w-2xl text-gray-600">
-            Interactive investment projections with AI financial insights.
+          <p
+            className="
+              mt-5
+              max-w-2xl
+              text-base
+              leading-8
+              text-gray-600
+            "
+          >
+
+            Interactive investment projections with AI-powered
+            financial insights that help you make better,
+            faster and smarter financial decisions.
+
           </p>
+
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mt-14">
+        <div
+          className="
+            mt-12
+            grid
+            gap-8
+
+            lg:grid-cols-3
+          "
+        >
 
           {/* Chart */}
 
-          <div className="lg:col-span-2 border border-gray-200 bg-white p-7 shadow-sm">
+          <div
+            className="
+              border
+              border-gray-200
+              bg-white
+              p-5
+              shadow-sm
 
-            <h3 className="font-semibold text-lg">
+              sm:p-6
+
+              lg:col-span-2
+              lg:p-8
+            "
+          >
+
+            <h3 className="text-lg font-semibold">
+
               Investment Growth
+
             </h3>
 
-            <div className="h-80 mt-8">
+            <div
+              className="
+                mt-8
+                h-64
+
+                sm:h-72
+
+                lg:h-80
+              "
+            >
 
               <ResponsiveContainer width="100%" height="100%">
 
@@ -127,7 +203,7 @@ export default function WorkspacePreview() {
 
           </div>
 
-          {/* Cards */}
+          {/* Right Side */}
 
           <div className="space-y-6">
 
@@ -135,22 +211,57 @@ export default function WorkspacePreview() {
 
               <div
                 key={card.title}
-                className="border border-gray-200 bg-white p-6 shadow-sm"
+                className="
+                  border
+                  border-gray-200
+                  bg-white
+                  p-6
+                  shadow-sm
+                "
               >
 
-                <p className="text-xs uppercase tracking-widest text-gray-500">
+                <p
+                  className="
+                    text-[11px]
+                    uppercase
+                    tracking-[0.25em]
+                    text-gray-500
+                  "
+                >
 
                   {card.title}
 
                 </p>
 
-                <h2 className={`mt-4 text-3xl font-semibold ${card.color}`}>
+                <h2
+                  className={`
+                    mt-4
+                    text-3xl
+                    font-semibold
+
+                    sm:text-4xl
+
+                    ${card.color}
+                  `}
+                >
 
                   {card.value}
 
                 </h2>
 
-                <div className="mt-4 inline-block bg-green-50 text-green-700 text-xs px-3 py-1">
+                <div
+                  className="
+                    mt-5
+                    inline-block
+                    border
+                    border-green-200
+                    bg-green-50
+                    px-3
+                    py-2
+                    text-xs
+                    text-green-700
+                  "
+                >
 
                   {card.status}
 
@@ -160,18 +271,42 @@ export default function WorkspacePreview() {
 
             ))}
 
-            <div className="border border-blue-200 bg-blue-50 p-6">
+            <div
+              className="
+                border
+                border-blue-200
+                bg-blue-50
+                p-6
+              "
+            >
 
-              <p className="text-xs uppercase tracking-widest text-blue-700">
+              <p
+                className="
+                  text-[11px]
+                  uppercase
+                  tracking-[0.25em]
+                  text-blue-700
+                "
+              >
 
                 AI Recommendation
 
               </p>
 
-              <p className="mt-4 text-sm text-gray-700 leading-7">
+              <p
+                className="
+                  mt-5
+                  text-sm
+                  leading-7
+                  text-gray-700
+                "
+              >
 
-                Shortening your loan tenure by 5 years could reduce total
-                interest significantly while maintaining a comfortable EMI.
+                Shortening your loan tenure by five years
+                could reduce your total interest burden
+                significantly while keeping your monthly
+                EMI comfortable and improving your long-term
+                financial health.
 
               </p>
 
@@ -182,6 +317,7 @@ export default function WorkspacePreview() {
         </div>
 
       </div>
+
     </section>
   );
 }

@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 export default function PrimaryButton({
   children,
   onClick,
@@ -5,31 +7,40 @@ export default function PrimaryButton({
   disabled = false,
 }) {
   return (
-   
-      <button
-  type={type}
-  onClick={onClick}
-  disabled={disabled}
-  className="
-    w-full
-    px-4
-    py-3
-    bg-blue-600
-    text-white
-    text-sm
-    font-medium
-    border
-    border-blue-600
-    rounded-sm
-    transition-all
-    duration-200
-    hover:bg-blue-700
-    hover:border-blue-700
-    disabled:opacity-50
-    disabled:cursor-not-allowed
-  "
->
-  {children}
-</button>
+    <motion.button
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="
+        w-full
+        px-6
+        py-3
+        bg-emerald-500
+        hover:bg-emerald-600
+        text-black
+        text-xs
+        sm:text-sm
+        font-black
+        uppercase
+        tracking-wider
+        border
+        border-emerald-400
+        rounded-xl
+        shadow-lg
+        shadow-emerald-500/25
+        transition-all
+        duration-200
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        flex
+        items-center
+        justify-center
+        gap-2
+      "
+    >
+      {children}
+    </motion.button>
   );
 }

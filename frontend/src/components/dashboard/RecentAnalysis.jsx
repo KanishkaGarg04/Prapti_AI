@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   TrendingUp,
   Search,
-  Eye,
   Download,
   Mail,
   ArrowUpRight,
@@ -14,7 +13,6 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAnalysis } from "../../context/AnalysisContext";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import api from "../../services/api";
 
 export default function RecentAnalysis() {
@@ -41,80 +39,77 @@ export default function RecentAnalysis() {
   }, [history, search]);
 
   if (!Array.isArray(history)) return null;
-async function downloadReport(item) {
-  const pdf = new jsPDF("p", "mm", "a4");
 
-  pdf.setFontSize(22);
-  pdf.text("Prapti AI Financial Report", 20, 20);
+  async function downloadReport(item) {
+    const pdf = new jsPDF("p", "mm", "a4");
 
-  pdf.setFontSize(12);
+    pdf.setFontSize(22);
+    pdf.text("Prapti AI Financial Report", 20, 20);
 
-  let y = 40;
+    pdf.setFontSize(12);
 
-  const rows = [
-    ["Loan Amount", `₹${Number(item.loanAmount).toLocaleString("en-IN")}`],
-    ["Interest Rate", `${item.interestRate}%`],
-    ["Loan Tenure", `${item.tenure} Years`],
-    ["Monthly EMI", `₹${Number(item.emi).toLocaleString("en-IN")}`],
-    ["Monthly Income", `₹${Number(item.monthlyIncome).toLocaleString("en-IN")}`],
-    ["Monthly Expenses", `₹${Number(item.monthlyExpenses).toLocaleString("en-IN")}`],
-    ["Health Score", `${item.healthScore}/100`],
-    ["Debt Ratio", `${item.debtRatio}%`],
-    ["Savings Rate", `${item.savingsRate}%`],
-    ["Goal", item.goal],
-  ];
+    let y = 40;
 
-  rows.forEach(([k, v]) => {
-    pdf.text(`${k}: ${v}`, 20, y);
+    const rows = [
+      ["Loan Amount", `₹${Number(item.loanAmount).toLocaleString("en-IN")}`],
+      ["Interest Rate", `${item.interestRate}%`],
+      ["Loan Tenure", `${item.tenure} Years`],
+      ["Monthly EMI", `₹${Number(item.emi).toLocaleString("en-IN")}`],
+      ["Monthly Income", `₹${Number(item.monthlyIncome).toLocaleString("en-IN")}`],
+      ["Monthly Expenses", `₹${Number(item.monthlyExpenses).toLocaleString("en-IN")}`],
+      ["Health Score", `${item.healthScore}/100`],
+      ["Debt Ratio", `${item.debtRatio}%`],
+      ["Savings Rate", `${item.savingsRate}%`],
+      ["Goal", item.goal],
+    ];
+
+    rows.forEach(([k, v]) => {
+      pdf.text(`${k}: ${v}`, 20, y);
+      y += 10;
+    });
+
     y += 10;
-  });
 
-  y += 10;
+    pdf.setFontSize(16);
+    pdf.text("AI Recommendation", 20, y);
 
-  pdf.setFontSize(16);
-  pdf.text("AI Recommendation", 20, y);
+    y += 10;
 
-  y += 10;
+    pdf.setFontSize(11);
 
-  pdf.setFontSize(11);
+    const lines = pdf.splitTextToSize(
+      item.recommendation || "No recommendation available.",
+      170
+    );
 
-  const lines = pdf.splitTextToSize(
-    item.recommendation || "No recommendation available.",
-    170
-  );
+    pdf.text(lines, 20, y);
 
-  pdf.text(lines, 20, y);
+    pdf.save(`Financial_Report_${item._id}.pdf`);
+  }
 
-  pdf.save(`Financial_Report_${item._id}.pdf`);
-}
   return (
-    
     <section
-      className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden"
+      className="rounded-2xl sm:rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden w-full max-w-full"
       style={{
         fontFamily:
           "Inter, system-ui, -apple-system, sans-serif",
       }}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 border-b border-slate-200 px-6 py-5">
-
-        <div>
-
-          <h2 className="text-[22px] font-semibold text-slate-900">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-5 border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 truncate">
             Recent Analysis
           </h2>
 
-          <p className="mt-1 text-[14px] text-slate-500">
+          <p className="mt-1 text-xs sm:text-sm text-slate-500 truncate">
             View, export and manage your previous financial reports.
           </p>
-
         </div>
 
-        <div className="relative w-full lg:w-80">
-
+        <div className="relative w-full lg:w-80 shrink-0">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
           />
 
           <input
@@ -122,23 +117,18 @@ async function downloadReport(item) {
             placeholder="Search loan amount, goal..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-[14px] outline-none transition focus:border-blue-500"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-xs sm:text-sm outline-none transition focus:border-blue-500"
           />
-
         </div>
-
       </div>
 
       {filteredHistory.length === 0 ? (
-
-        <div className="flex h-52 items-center justify-center text-[15px] text-slate-500">
+        <div className="flex h-52 items-center justify-center text-xs sm:text-sm text-slate-500 px-4 text-center">
           No previous analysis found.
         </div>
-
       ) : (
-
         <div className="divide-y divide-slate-100">
-                    {filteredHistory.map((item, index) => {
+          {filteredHistory.map((item, index) => {
             const score = item.healthScore ?? 0;
 
             let Icon = CheckCircle2;
@@ -162,125 +152,111 @@ async function downloadReport(item) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 px-6 py-5 hover:bg-slate-50 transition"
+                className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8 py-5 sm:py-6 hover:bg-slate-50 transition"
               >
-                <div className="flex items-start gap-4">
-
+                <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
                   <div
-                    className={`rounded-xl border p-3 ${badge}`}
+                    className={`rounded-xl border p-2.5 sm:p-3 shrink-0 ${badge}`}
                   >
-                    <Icon size={22} />
+                    <Icon size={20} className="sm:w-[22px] sm:h-[22px]" />
                   </div>
 
-                  <div>
-
-                    <div className="flex flex-wrap items-center gap-3">
-
-                      <h3 className="text-[17px] font-semibold text-slate-900">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <h3 className="text-base sm:text-lg font-semibold text-slate-900 truncate">
                         ₹
                         {Number(
                           item.loanAmount || 0
                         ).toLocaleString("en-IN")}
                       </h3>
 
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-[12px] font-medium text-blue-700">
+                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] sm:text-xs font-medium text-blue-700 truncate max-w-[200px]">
                         {item.goal || "Financial Planning"}
                       </span>
-
                     </div>
 
-                    <p className="mt-2 text-[14px] text-slate-500">
+                    <p className="mt-1.5 text-xs sm:text-sm text-slate-500 truncate">
                       {item.interestRate}% Interest •{" "}
                       {item.tenure} Years •{" "}
                       {item.investment}
                     </p>
 
-                    <div className="mt-3 flex flex-wrap items-center gap-5 text-[13px] text-slate-500">
-
-                      <div className="flex items-center gap-2">
-
-                        <Clock3 size={15} />
-
-                        {new Date(
-                          item.createdAt
-                        ).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-
+                    <div className="mt-2.5 flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-500">
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Clock3 size={14} />
+                        <span>
+                          {new Date(
+                            item.createdAt
+                          ).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
                       </div>
 
-                      <div className="font-medium text-slate-700">
+                      <div className="font-medium text-slate-700 shrink-0">
                         EMI ₹
                         {Number(item.emi || 0).toLocaleString(
                           "en-IN"
                         )}
                       </div>
-
                     </div>
-
                   </div>
-
                 </div>
 
-                <div className="flex flex-col items-start lg:items-end gap-4">
-
+                <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
                   <div
-                    className={`rounded-full border px-4 py-2 text-[13px] font-semibold ${badge}`}
+                    className={`rounded-full border px-3 py-1 text-xs sm:text-[13px] font-semibold ${badge}`}
                   >
                     Health Score {score}/100
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-
+                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                     <button
                       onClick={() =>
                         navigate(`/reports?id=${item._id}`)
                       }
-                      className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-[13px] font-medium text-slate-700 transition hover:border-blue-500 hover:text-blue-600"
                     >
-                       <ArrowUpRight size={16} />
-                      View
+                      <ArrowUpRight size={15} />
+                      <span>View</span>
                     </button>
 
-                   <button
-                    onClick={() => downloadReport(item)}
-                    className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
-                  >
-                    <Download size={15} />
-                    PDF
-                  </button>
+                    <button
+                      onClick={() => downloadReport(item)}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-[13px] font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+                    >
+                      <Download size={14} />
+                      <span>PDF</span>
+                    </button>
 
                     <button
-                        onClick={async () => {
-                          const email = prompt("Enter recipient email");
+                      onClick={async () => {
+                        const email = prompt("Enter recipient email");
 
-                          if (!email) return;
+                        if (!email) return;
 
-                          try {
-                            await api.post("/analysis/email", {
-                              email,
-                              report: item,
-                            });
+                        try {
+                          await api.post("/analysis/email", {
+                            email,
+                            report: item,
+                          });
 
-                            alert("✅ Report sent successfully!");
-                          } catch (err) {
-                            console.error(err);
+                          alert("✅ Report sent successfully!");
+                        } catch (err) {
+                          console.error(err);
 
-                            alert("❌ Failed to send email.");
-                          }
-                        }}
-                        className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-700 transition hover:border-violet-500 hover:text-violet-600"
-                      >
-                        <Mail size={15} />
-                        Email
-                      </button>
-
+                          alert("❌ Failed to send email.");
+                        }
+                      }}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-[13px] font-medium text-slate-700 transition hover:border-violet-500 hover:text-violet-600"
+                    >
+                      <Mail size={14} />
+                      <span>Email</span>
+                    </button>
                   </div>
-
                 </div>
-
               </motion.div>
             );
           })}

@@ -8,15 +8,15 @@ import {
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#0b0f19] border border-zinc-700 rounded-2xl p-5 shadow-2xl backdrop-blur-xl">
+      <div className="bg-[#0b0f19] border border-zinc-700 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-xl max-w-xs">
         <p className="text-xs text-zinc-400 uppercase font-bold mb-3">Year {label}</p>
         {payload.map((entry, i) => (
-          <div key={i} className="flex justify-between items-center py-2">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>
-              <span className="text-zinc-300">{entry.name}</span>
+          <div key={i} className="flex justify-between items-center py-1.5 gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: entry.color }}></div>
+              <span className="text-zinc-300 text-xs sm:text-sm">{entry.name}</span>
             </div>
-            <span className="font-bold text-white">₹{entry.value.toLocaleString('en-IN')}</span>
+            <span className="font-bold text-white text-xs sm:text-sm">₹{entry.value.toLocaleString('en-IN')}</span>
           </div>
         ))}
       </div>
@@ -55,19 +55,21 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
   ], [currentEmi]);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-16 pb-24 max-w-7xl mx-auto">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 sm:space-y-16 pb-24 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 overflow-x-hidden">
 
       {/* Comparison Mode Banner */}
       {isComparisonMode && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-3xl p-6 flex items-center justify-between mb-12">
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-emerald-400 text-xl">↔️</span>
             <div>
-              <p className="font-black text-emerald-400 text-sm tracking-widest">DIFFERENTIAL MODE ACTIVE</p>
+              <p className="font-black text-emerald-400 text-xs sm:text-sm tracking-widest">DIFFERENTIAL MODE ACTIVE</p>
               <p className="text-zinc-400 text-xs">Live Computation vs Stored Baseline</p>
             </div>
           </div>
-          <button className="text-xs font-black uppercase px-6 py-3 border border-emerald-500/50 hover:bg-emerald-500/10 rounded-xl transition-all">CLEAR COMPARISON</button>
+          <button className="text-xs font-black uppercase px-5 py-2.5 border border-emerald-500/50 hover:bg-emerald-500/10 rounded-xl transition-all active:scale-[0.98]">
+            CLEAR COMPARISON
+          </button>
         </div>
       )}
 
@@ -98,31 +100,31 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
 
       {/* Neural Risk Score */}
       {results.risk && (
-        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-12 flex flex-col md:flex-row items-center gap-12">
-          <div className="text-center">
+        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-6 sm:p-10 lg:p-12 flex flex-col md:flex-row items-center gap-8 lg:gap-12 shadow-2xl">
+          <div className="text-center md:text-left">
             <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-3">NEURAL RISK SCORE</p>
-            <div className={`text-8xl font-black tracking-tighter ${
+            <div className={`text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter ${
               riskColor === 'green' ? 'text-emerald-400' : riskColor === 'yellow' ? 'text-amber-400' : 'text-rose-400'
             }`}>
               {riskScore}
             </div>
           </div>
-          <div className="flex-1 text-zinc-300 leading-relaxed">
+          <div className="flex-1 text-zinc-300 text-sm sm:text-base leading-relaxed text-center md:text-left">
             {results.risk.risk?.explanation || results.risk.explanation || "Analyzing financial safety margins..."}
           </div>
         </div>
       )}
 
       {/* Panic Mode Stress Test */}
-      <div className={`bg-[#111827] border transition-all duration-500 rounded-3xl p-10 ${showStressTest ? 'border-rose-500 shadow-rose-500/50' : 'border-zinc-700'}`}>
-        <div className="flex justify-between items-center mb-8">
-          <h3 className="flex items-center gap-3 text-rose-400 text-sm font-black uppercase tracking-widest">
+      <div className={`bg-[#111827] border transition-all duration-500 rounded-3xl p-6 sm:p-10 ${showStressTest ? 'border-rose-500 shadow-2xl shadow-rose-500/20' : 'border-zinc-700'}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <h3 className="flex items-center gap-3 text-rose-400 text-xs sm:text-sm font-black uppercase tracking-widest">
             <span className="text-xl">⚡</span> 
             PANIC MODE - LIVE STRESS SIMULATION
           </h3>
           <button 
             onClick={() => setShowStressTest(!showStressTest)}
-            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase transition-all ${showStressTest ? 'bg-rose-500 text-black' : 'border border-zinc-600 hover:border-rose-400'}`}
+            className={`w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-black uppercase transition-all active:scale-[0.98] ${showStressTest ? 'bg-rose-500 text-black' : 'border border-zinc-600 hover:border-rose-400 text-zinc-300'}`}
           >
             {showStressTest ? 'HIDE PANIC MODE' : 'ACTIVATE PANIC MODE ⚡'}
           </button>
@@ -135,11 +137,11 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
                 <motion.div 
                   key={i}
                   whileHover={{ borderColor: '#f43f5e', scale: 1.02 }}
-                  className="bg-zinc-900 border border-zinc-700 hover:border-rose-500 rounded-3xl p-7 transition-all"
+                  className="bg-zinc-900 border border-zinc-700 hover:border-rose-500 rounded-3xl p-6 sm:p-7 transition-all"
                 >
                   <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-4">{s.scenario}</p>
-                  <p className="text-3xl font-black text-white">{s.value}</p>
-                  <p className="text-sm text-zinc-400 mt-6 leading-snug">{s.desc}</p>
+                  <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-6 leading-snug">{s.desc}</p>
                 </motion.div>
               ))}
             </motion.div>
@@ -148,48 +150,48 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
       </div>
 
       {/* Neural Optimization */}
-      <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-12">
+      <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl">
         <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-8">NEURAL OPTIMIZATION ENGINE</h4>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           <div>
-            <p className="text-xs font-black text-zinc-400">RECOMMENDED TENURE</p>
-            <p className="text-7xl font-black text-white tracking-tighter">{targetTenure} Years</p>
+            <p className="text-xs font-black text-zinc-400 uppercase tracking-wider">RECOMMENDED TENURE</p>
+            <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter mt-2">{targetTenure} Years</p>
           </div>
           <div>
-            <p className="text-xs font-black text-zinc-400">POTENTIAL INTEREST SAVED</p>
-            <p className="text-7xl font-black text-emerald-400 tracking-tighter">₹{Math.round(interestSaved).toLocaleString('en-IN')}</p>
+            <p className="text-xs font-black text-zinc-400 uppercase tracking-wider">POTENTIAL INTEREST SAVED</p>
+            <p className="text-5xl sm:text-6xl lg:text-7xl font-black text-emerald-400 tracking-tighter mt-2">₹{Math.round(interestSaved).toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
 
       {/* Growth vs Debt Chart */}
       {results.opportunity && results.opportunity.chart_data && (
-        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-12">
-          <div className="flex justify-between items-center mb-8">
-            <h4 className="text-sm font-black text-zinc-400 uppercase tracking-widest">Growth vs Debt</h4>
-            <div className="flex bg-zinc-800 rounded-2xl p-1">
-              <button onClick={() => setOppView('line')} className={`px-6 py-2 text-sm font-black rounded-xl transition-all ${oppView === 'line' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}>LINE</button>
-              <button onClick={() => setOppView('area')} className={`px-6 py-2 text-sm font-black rounded-xl transition-all ${oppView === 'area' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700'}`}>AREA</button>
+        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <h4 className="text-xs sm:text-sm font-black text-zinc-400 uppercase tracking-widest">Growth vs Debt</h4>
+            <div className="flex bg-zinc-800 rounded-2xl p-1 w-full sm:w-auto">
+              <button onClick={() => setOppView('line')} className={`flex-1 sm:flex-none px-6 py-2 text-xs sm:text-sm font-black rounded-xl transition-all ${oppView === 'line' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700 text-zinc-300'}`}>LINE</button>
+              <button onClick={() => setOppView('area')} className={`flex-1 sm:flex-none px-6 py-2 text-xs sm:text-sm font-black rounded-xl transition-all ${oppView === 'area' ? 'bg-emerald-500 text-black' : 'hover:bg-zinc-700 text-zinc-300'}`}>AREA</button>
             </div>
           </div>
-          <div className="h-96">
+          <div className="h-80 sm:h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
               {oppView === 'line' ? (
                 <LineChart data={results.opportunity.chart_data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                  <XAxis dataKey="year" stroke="#64748b" />
-                  <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" />
+                  <XAxis dataKey="year" stroke="#64748b" fontSize={12} />
+                  <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" fontSize={12} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" strokeWidth={5} name="EMI Paid" />
-                 <Line type="natural" dataKey="investment_value" stroke="#10b981" strokeWidth={6} name="Investment Growth" />
+                  <Line type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" strokeWidth={4} name="EMI Paid" />
+                  <Line type="natural" dataKey="investment_value" stroke="#10b981" strokeWidth={5} name="Investment Growth" />
                 </LineChart>
               ) : (
                 <AreaChart data={results.opportunity.chart_data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                  <XAxis dataKey="year" stroke="#64748b" />
-                  <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" />
+                  <XAxis dataKey="year" stroke="#64748b" fontSize={12} />
+                  <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" fontSize={12} />
                   <Tooltip content={<CustomTooltip />} />
-                 <Area type="natural" dataKey="investment_value" stroke="#10b981" fill="#10b981" fillOpacity={0.25} name="Investment Growth" />
+                  <Area type="natural" dataKey="investment_value" stroke="#10b981" fill="#10b981" fillOpacity={0.25} name="Investment Growth" />
                   <Area type="natural" dataKey="cumulative_emi_paid" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.15} name="EMI Paid" />
                 </AreaChart>
               )}
@@ -200,14 +202,14 @@ export default function ResultsDashboard({ results, storedResults, isComparisonM
 
       {/* Buy vs Rent */}
       {results.debtvsrent && results.debtvsrent.debt_vs_rent_data && (
-        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-12">
-          <h4 className="text-sm font-black text-zinc-400 uppercase tracking-widest mb-8">Buy vs Rent (20 Years)</h4>
-          <div className="h-96">
+        <div className="bg-[#111827] border border-zinc-700 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl">
+          <h4 className="text-xs sm:text-sm font-black text-zinc-400 uppercase tracking-widest mb-8">Buy vs Rent (20 Years)</h4>
+          <div className="h-80 sm:h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={filteredDebtData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="year" stroke="#64748b" />
-                <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" />
+                <XAxis dataKey="year" stroke="#64748b" fontSize={12} />
+                <YAxis tickFormatter={rupeeFormatter} stroke="#64748b" fontSize={12} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="debt_cumulative" fill="#ef4444" name="Loan Cost" radius={[8,8,0,0]} />
                 <Bar dataKey="rent_cumulative" fill="#3b82f6" name="Rent Cost" radius={[8,8,0,0]} />
@@ -224,18 +226,18 @@ function StrategyCard({ title, badge, emi, desc, highlighted = false }) {
   return (
     <motion.div 
       whileHover={{ y: -8 }}
-      className={`p-8 rounded-3xl border transition-all ${highlighted ? 'border-emerald-400 bg-[#1a2333] shadow-2xl' : 'border-zinc-700 bg-[#111827]'}`}
+      className={`p-6 sm:p-8 rounded-3xl border transition-all shadow-xl ${highlighted ? 'border-emerald-400 bg-[#1a2333]' : 'border-zinc-700 bg-[#111827]'}`}
     >
-      <div className="flex justify-between items-center mb-8">
-        <h5 className="font-black text-lg tracking-tight">{title}</h5>
-        <span className={`text-xs px-4 py-2 rounded-2xl font-black uppercase ${highlighted ? 'bg-emerald-400 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+      <div className="flex justify-between items-center gap-2 mb-6 sm:mb-8">
+        <h5 className="font-black text-base sm:text-lg tracking-tight text-white">{title}</h5>
+        <span className={`text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl font-black uppercase shrink-0 ${highlighted ? 'bg-emerald-400 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
           {badge}
         </span>
       </div>
-      <p className="text-sm text-zinc-400 mb-10 leading-relaxed">{desc}</p>
+      <p className="text-xs sm:text-sm text-zinc-400 mb-8 sm:mb-10 leading-relaxed">{desc}</p>
       <div className="flex justify-between items-baseline border-t border-zinc-700 pt-6">
-        <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">Monthly EMI</span>
-        <span className="text-3xl font-black text-emerald-400">₹{Math.round(emi).toLocaleString('en-IN')}</span>
+        <span className="text-[10px] sm:text-xs font-black text-zinc-400 uppercase tracking-widest">Monthly EMI</span>
+        <span className="text-2xl sm:text-3xl font-black text-emerald-400">₹{Math.round(emi).toLocaleString('en-IN')}</span>
       </div>
     </motion.div>
   );

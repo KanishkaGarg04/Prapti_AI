@@ -9,27 +9,31 @@ import Footer from "./Footer";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-50">
 
       <Navbar />
 
-      <div id="home">
-        <Hero />
-      </div>
+      <main className="w-full">
 
-      <Stats />
+        <section id="home">
+          <Hero />
+        </section>
 
-      <WorkspacePreview />
+        <Stats />
 
-      <div id="features">
-        <Features />
-      </div>
+        <WorkspacePreview />
 
-      <div id="faq">
+        <section id="features">
+          <Features />
+        </section>
+
+        <section id="faq">
           <FAQ />
-        </div>
+        </section>
 
-      <CTA />
+        <CTA />
+
+      </main>
 
       <Footer />
 

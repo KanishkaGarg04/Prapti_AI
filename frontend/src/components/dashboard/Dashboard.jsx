@@ -14,8 +14,8 @@ import HealthScoreCard from "./cards/HealthScoreCard";
 import SavingsCard from "./cards/SavingsCard";
 import DebtRatioCard from "./cards/DebtRatioCard";
 import EmergencyFundCard from "./cards/EmergencyFundCard";
-import AIInsights from "./AIInsights";
 
+import AIInsights from "./AIInsights";
 import InvestmentPlanner from "./InvestmentPlanner";
 
 export default function Dashboard() {
@@ -40,73 +40,125 @@ export default function Dashboard() {
 
       <div className="flex">
 
+        {/* Sidebar */}
+
         <Sidebar />
 
-        <main className="flex-1">
+        {/* Main */}
+
+        <main className="flex-1 min-w-0 lg:ml-72">
 
           <Topbar />
 
-          <div className="p-8">
+          <div className="w-full px-4 pt-24 pb-10 sm:px-6 lg:px-10 lg:pt-8">
 
-            <MarketOverview />
-
-           
+            {/* Heading */}
 
             <div className="mb-8">
 
-              <p className="text-xs uppercase tracking-[0.3em] text-blue-600">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-blue-600">
                 Dashboard
               </p>
 
-              <h1 className="mt-2 text-3xl font-bold text-gray-900">
+              <h1 className="mt-3 text-3xl font-semibold text-slate-900 sm:text-4xl">
                 Financial Analysis Workspace
               </h1>
 
-              <p className="mt-2 text-gray-600">
-                Analyze loans, estimate savings, visualize financial
-                projections, and receive AI-powered recommendations.
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                Analyze loans, estimate savings, visualize long-term
+                financial projections and receive AI-powered
+                recommendations for better financial planning.
               </p>
 
             </div>
 
-         
-            <div id = "analysis">
-              <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
+            {/* Market */}
 
-                <AnalysisForm />
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <MarketOverview />
 
-                  <HealthScoreCard />
+            {/* Analysis */}
 
-                  <SavingsCard />
+            <section
+              id="analysis"
+              className="mt-8 space-y-8"
+            >
 
-                  <DebtRatioCard />
+              <AnalysisForm />
 
-                  <EmergencyFundCard />
+              {/* Cards */}
 
-                </div>
-                <div id="advisor" className="mt-8">
-                    <AIInsights />
-                  </div>
-                
-                        <div id="charts" className="mt-8">
-                          <ChartsSection />
-                        </div>
+              <div
+                className="
+                grid
+                grid-cols-1
+                gap-5
+                sm:grid-cols-2
+                xl:grid-cols-4
+              "
+              >
 
-                      <div id="planner" className="mt-8">
-                        <InvestmentPlanner />
-                      </div>
-                <div id="history" className="mt-8">
-                        <RecentAnalysis />
-                      </div>
+                <HealthScoreCard />
+
+                <SavingsCard />
+
+                <DebtRatioCard />
+
+                <EmergencyFundCard />
 
               </div>
-            </div>
+
+            </section>
+
+            {/* AI Advisor */}
+
+            <section
+              id="advisor"
+              className="mt-10"
+            >
+
+              <AIInsights />
+
+            </section>
+
+            {/* Charts */}
+
+            <section
+              id="charts"
+              className="mt-10"
+            >
+
+              <ChartsSection />
+
+            </section>
+
+            {/* Planner */}
+
+            <section
+              id="planner"
+              className="mt-10"
+            >
+
+              <InvestmentPlanner />
+
+            </section>
+
+            {/* History */}
+
+            <section
+              id="history"
+              className="mt-10"
+            >
+
+              <RecentAnalysis />
+
+            </section>
+
           </div>
 
         </main>
 
       </div>
+
     </div>
   );
 }
