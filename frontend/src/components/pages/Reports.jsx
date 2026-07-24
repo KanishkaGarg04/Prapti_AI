@@ -12,6 +12,8 @@ import {
   Brain,
   Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import Sidebar from "../dashboard/Sidebar";
 import Topbar from "../dashboard/Topbar";
@@ -37,7 +39,7 @@ export default function Reports() {
       <div className="min-h-screen bg-slate-100 flex">
         <Sidebar />
 
-        <main className="flex-1">
+        <main className="flex-1 min-w-0 lg:ml-72">
           <Topbar />
 
           <div className="p-10">
@@ -74,13 +76,151 @@ export default function Reports() {
     {};
 
   const investment = report.investmentPlan || {};
+  const downloadPDF = () => {
+  const doc = new jsPDF();
+
+  // Heading
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(37, 99, 235);
+  doc.text("Prapti AI", 14, 18);
+
+  doc.setFontSize(16);
+  doc.setTextColor(0);
+  doc.text("Financial Analysis Report", 14, 28);
+
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+
+  doc.text(
+    `Generated on: ${new Date().toLocaleString()}`,
+    14,
+    36
+  );
+
+  // Loan Details
+
+  autoTable(doc, {
+    startY: 45,
+    head: [["Financial Metric", "Value"]],
+    body: [
+      [
+        "Loan Amount",
+        `₹${Number(report.loanAmount || 0).toLocaleString("en-IN")}`,
+      ],
+      [
+        "Monthly EMI",
+        `₹${Number(report.emi || 0).toLocaleString("en-IN")}`,
+      ],
+      [
+        "Interest Rate",
+        `${report.interestRate || 0}%`,
+      ],
+      [
+        "Loan Tenure",
+        `${report.tenure || 0} Years`,
+      ],
+      [
+        "Health Score",
+        `${report.healthScore || 0}/100`,
+      ],
+      [
+        "Savings Rate",
+        `${report.savingsRate || 0}%`,
+      ],
+    ],
+    headStyles: {
+      fillColor: [37, 99, 235],
+    },
+  });
+
+  // Investment Allocation
+
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 12,
+    head: [["Investment", "Allocation"]],
+    body: [
+      ["Stocks", `${investment.stocks ?? 0}%`],
+      ["Mutual Funds", `${investment.mutualFunds ?? 0}%`],
+      ["Debt Funds", `${investment.debtFunds ?? 0}%`],
+      ["Gold", `${investment.gold ?? 0}%`],
+      ["Cash", `${investment.cash ?? 0}%`],
+    ],
+    headStyles: {
+      fillColor: [16, 185, 129],
+    },
+  });
+
+  let y = doc.lastAutoTable.finalY + 15;
+
+  const section = (title, text) => {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+
+    doc.text(title, 14, y);
+
+    y += 8;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+
+    const lines = doc.splitTextToSize(
+      text || "No information available.",
+      180
+    );
+
+    doc.text(lines, 14, y);
+
+    y += lines.length * 6 + 10;
+
+    if (y > 260) {
+      doc.addPage();
+      y = 20;
+    }
+  };
+
+  section(
+    "Executive Summary",
+    ai.summary || report.recommendation
+  );
+
+  section(
+    "Investment Advice",
+    ai.investmentAdvice
+  );
+
+  section(
+    "Loan Advice",
+    ai.loanAdvice
+  );
+
+  section(
+    "Financial Strengths",
+    (ai.strengths || []).join("\n• ")
+  );
+
+  section(
+    "Potential Risks",
+    (ai.risks || []).join("\n• ")
+  );
+
+  section(
+    "Recommended Action Plan",
+    (ai.actions || []).map((a, i) => `${i + 1}. ${a}`).join("\n")
+  );
+
+  doc.save(
+    `PraptiAI_Report_${new Date().toLocaleDateString("en-GB").replace(/\//g, "-")}.pdf`
+  );
+};
 
   return (
     <div className="min-h-screen bg-slate-100 flex">
 
       <Sidebar />
 
-      <main className="flex-1">
+      <main className="flex-1 min-w-0 lg:ml-72">
 
         <Topbar />
 
@@ -118,9 +258,10 @@ export default function Reports() {
                     Dashboard
                   </button>
 
-                  <button
+                 <button
+                    onClick={downloadPDF}
                     className="flex items-center gap-2 rounded-xl bg-white text-blue-700 px-5 py-3 font-semibold hover:bg-slate-100 transition"
-                  >
+                    >
                     <Download size={18} />
                     Download PDF
                   </button>

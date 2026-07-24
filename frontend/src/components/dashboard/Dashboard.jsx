@@ -17,9 +17,32 @@ import EmergencyFundCard from "./cards/EmergencyFundCard";
 
 import AIInsights from "./AIInsights";
 import InvestmentPlanner from "./InvestmentPlanner";
+import DashboardSkeleton from "./DashboardSkeleton";
 
 export default function Dashboard() {
+  
   const { loading, setHistory } = useAnalysis();
+  if (loading) {
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <div className="flex">
+
+        <Sidebar />
+
+        <main className="flex-1 lg:ml-72">
+
+          <Topbar />
+
+          <div className="px-6 py-8">
+            <DashboardSkeleton />
+          </div>
+
+        </main>
+
+      </div>
+    </div>
+  );
+}
 
   useEffect(() => {
     async function loadHistory() {

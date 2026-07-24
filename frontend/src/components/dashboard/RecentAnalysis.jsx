@@ -223,12 +223,21 @@ export default function RecentAnalysis() {
                       <span>View</span>
                     </button>
 
-                    <button
-                      onClick={() => downloadReport(item)}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-[13px] font-medium text-slate-700 transition hover:border-emerald-500 hover:text-emerald-600"
+                   <button
+                      onClick={() => navigate(`/reports?id=${item._id}`)}
+                      className="
+                        flex items-center gap-2
+                        rounded-lg
+                        bg-blue-600
+                        px-4 py-2
+                        text-sm font-medium text-white
+                        transition
+                        hover:bg-blue-700
+                        active:scale-95
+                      "
                     >
-                      <Download size={14} />
-                      <span>PDF</span>
+                      <Download size={16} />
+                      Download PDF
                     </button>
 
                     <button
