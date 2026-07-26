@@ -73,7 +73,7 @@ Return this exact format:
         headers: {
             Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://prapti-ai-nu.vercel.app/",
+            "HTTP-Referer": "https://prapti-ai-nu.vercel.app",
             "X-Title": "Prapti AI",
           }
       }
