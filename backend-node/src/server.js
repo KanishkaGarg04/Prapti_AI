@@ -14,20 +14,29 @@ dotenv.config();
 const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://prapti-ai-nu.vercel.app/",
+  "https://prapti-ai-nu.vercel.app",
 ];
 
 
 connectDB();
 
+app.use((req, res, next) => {
+  console.log("Origin:", req.headers.origin);
+  next();
+});
+
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log("CORS Origin:", origin);
+
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
+        console.log("Allowed");
         callback(null, true);
       } else {
+        console.log("Blocked");
         callback(new Error("Not allowed by CORS"));
       }
     },
