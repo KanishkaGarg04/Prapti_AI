@@ -10,6 +10,7 @@ import Login from "./components/pages/Login";
 import Signup from "./components/pages/Signup";
 
 import PrivateRoute from "./components/auth/PrivateRoute";
+import OfflineReports from "./components/pages/OfflineReports";
 
 export default function App() {
   return (
@@ -39,6 +40,10 @@ export default function App() {
               <DashboardPage />
             </PrivateRoute>
           }
+        />
+        <Route
+          path="/offline"
+          element={<OfflineReports />}
         />
 
         <Route

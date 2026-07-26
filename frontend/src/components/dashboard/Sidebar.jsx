@@ -8,6 +8,7 @@ import {
   Settings,
   Menu,
   X,
+  HardDriveDownload,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -28,6 +29,7 @@ const menu = [
     name: "AI Financial Advisor",
     target: "advisor",
   },
+ 
   {
     icon: TrendingUp,
     name: "Investment Planner",
@@ -43,6 +45,11 @@ const menu = [
     name: "Recent Analysis",
     target: "history",
   },
+   {
+  icon: HardDriveDownload,
+  name: "Offline Reports",
+  route: "/offline",
+},
 ];
 
 export default function Sidebar() {
@@ -74,7 +81,14 @@ export default function Sidebar() {
     <>
       {/* Mobile Toggle */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+       onClick={() => {
+  if (item.route) {
+    setIsOpen(false);
+    navigate(item.route);
+  } else {
+    scrollToSection(item.target);
+  }
+}}
         className="
           lg:hidden
           fixed

@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useAnalysis } from "../../context/AnalysisContext";
 import jsPDF from "jspdf";
 import api from "../../services/api";
+import { saveOfflineReport } from "../../../../backend-node/src/utils/offlineDB";
 
 function AnalysisSkeleton() {
   return (
@@ -133,7 +134,11 @@ export default function RecentAnalysis() {
 
     pdf.text(lines, 20, y);
 
-    pdf.save(`Financial_Report_${item._id}.pdf`);
+    const blob = pdf.output("blob");
+
+      await saveOfflineReport(item._id, blob);
+
+      pdf.save(`Financial_Report_${item._id}.pdf`);
   }
 
   return (
