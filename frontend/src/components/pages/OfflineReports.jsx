@@ -8,7 +8,7 @@ import {
   getAllOfflineReports,
   getOfflineReport,
   deleteOfflineReport,
-} from "../../../../backend-node/src/utils/offlineDB";;
+} from "../../utils/offlineDB";
 
 export default function OfflineReports() {
   const [reports, setReports] = useState([]);

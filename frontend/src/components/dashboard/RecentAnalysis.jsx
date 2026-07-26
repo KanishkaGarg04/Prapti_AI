@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useAnalysis } from "../../context/AnalysisContext";
 import jsPDF from "jspdf";
 import api from "../../services/api";
-import { saveOfflineReport } from "../../../../backend-node/src/utils/offlineDB";
+import { saveOfflineReport } from "../../utils/offlineDB";
 
 function AnalysisSkeleton() {
   return (
