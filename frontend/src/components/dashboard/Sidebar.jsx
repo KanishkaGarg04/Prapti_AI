@@ -79,32 +79,25 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <button
-       onClick={() => {
-  if (item.route) {
-    setIsOpen(false);
-    navigate(item.route);
-  } else {
-    scrollToSection(item.target);
-  }
-}}
-        className="
-          lg:hidden
-          fixed
-          top-4
-          left-4
-          z-[60]
-          rounded-xl
-          bg-white
-          p-3
-          shadow-lg
-          border
-          border-slate-200
-        "
-      >
-        {isOpen ? <X size={22} /> : <Menu size={22} />}
-      </button>
+      
+   <button
+  onClick={() => setIsOpen(!isOpen)}
+  className="
+    lg:hidden
+    fixed
+    top-4
+    left-4
+    z-[60]
+    rounded-xl
+    bg-white
+    p-3
+    shadow-lg
+    border
+    border-slate-200
+  "
+>
+  {isOpen ? <X size={22} /> : <Menu size={22} />}
+</button>
 
       {/* Overlay */}
       {isOpen && (
@@ -158,7 +151,14 @@ export default function Sidebar() {
               return (
                 <button
                   key={item.name}
-                  onClick={() => scrollToSection(item.target)}
+                  onClick={() => {
+                    if (item.route) {
+                      setIsOpen(false);
+                      navigate(item.route);
+                    } else {
+                      scrollToSection(item.target);
+                    }
+                  }}
                   className="
                     w-full
                     flex
