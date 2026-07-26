@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, PlayCircle, TrendingUp } from "lucide-react";
 
-export default function Hero() {
+export default function Heros() {
   return (
     <section className="relative overflow-hidden pt-28 sm:pt-36 pb-16 sm:pb-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 w-full">
       {/* Background Blur */}
