@@ -18,6 +18,7 @@ import autoTable from "jspdf-autotable";
 import Sidebar from "../dashboard/Sidebar";
 import Topbar from "../dashboard/Topbar";
 import { useAnalysis } from "../../context/AnalysisContext";
+import ChatAssistant from "../chat/ChatAssistant";
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -317,7 +318,9 @@ export default function Reports() {
               <h2 className="text-2xl font-bold text-slate-900 mb-6">
                 Investment Allocation
               </h2>
-
+                 <div className="border-t border-slate-200 p-8">
+  <ChatAssistant analysisId={report._id} />
+</div>
               <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
 
                 <AllocationCard
@@ -346,7 +349,7 @@ export default function Reports() {
                 />
 
               </div>
-
+           
             </div>
                         <div className="border-t border-slate-200 p-8">
 

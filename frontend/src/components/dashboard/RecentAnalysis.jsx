@@ -15,10 +15,59 @@ import { useAnalysis } from "../../context/AnalysisContext";
 import jsPDF from "jspdf";
 import api from "../../services/api";
 
+function AnalysisSkeleton() {
+  return (
+    <div className="divide-y divide-slate-100">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 px-6 lg:px-8 py-6 animate-pulse"
+        >
+          <div className="flex items-start gap-4 flex-1">
+
+            <div className="h-12 w-12 rounded-xl bg-slate-200" />
+
+            <div className="flex-1 space-y-3">
+
+              <div className="h-5 w-40 rounded bg-slate-200" />
+
+              <div className="h-4 w-64 rounded bg-slate-200" />
+
+              <div className="h-4 w-48 rounded bg-slate-200" />
+
+            </div>
+
+          </div>
+
+          <div className="space-y-3">
+
+            <div className="h-8 w-32 rounded-full bg-slate-200" />
+
+            <div className="flex gap-2">
+
+              <div className="h-10 w-24 rounded-xl bg-slate-200" />
+
+              <div className="h-10 w-36 rounded-xl bg-slate-200" />
+
+              <div className="h-10 w-24 rounded-xl bg-slate-200" />
+
+            </div>
+
+          </div>
+
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function RecentAnalysis() {
   const navigate = useNavigate();
 
-  const { history = [] } = useAnalysis();
+  const {
+  history = [],
+  historyLoading,
+} = useAnalysis();
 
   const [search, setSearch] = useState("");
 
@@ -122,7 +171,9 @@ export default function RecentAnalysis() {
         </div>
       </div>
 
-      {filteredHistory.length === 0 ? (
+      {historyLoading ? (
+  <AnalysisSkeleton />
+) : filteredHistory.length === 0 ? (
         <div className="flex h-52 items-center justify-center text-xs sm:text-sm text-slate-500 px-4 text-center">
           No previous analysis found.
         </div>

@@ -21,7 +21,11 @@ import DashboardSkeleton from "./DashboardSkeleton";
 
 export default function Dashboard() {
   
-  const { loading, setHistory } = useAnalysis();
+ const {
+  loading,
+  setHistory,
+  setHistoryLoading,
+} = useAnalysis();
   if (loading) {
   return (
     <div className="min-h-screen bg-slate-100">
@@ -46,13 +50,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function loadHistory() {
-      try {
-        const res = await api.get("/analysis/history");
-        setHistory(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
+  try {
+    setHistoryLoading(true);
+
+    const res = await api.get("/analysis/history");
+
+    setHistory(res.data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setHistoryLoading(false);
+  }
+}
 
     loadHistory();
   }, [setHistory]);

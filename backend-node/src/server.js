@@ -7,6 +7,7 @@ import { connectDB } from "./config/db.js";
 import analysisRoutes from "./routes/analysisRoutes.js";
 import marketRoutes from "./routes/marketRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 dotenv.config();
 
@@ -34,6 +35,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/analysis", analysisRoutes);
 
 app.use("/api/market", marketRoutes);
+
+app.use("/api/chat", chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 
